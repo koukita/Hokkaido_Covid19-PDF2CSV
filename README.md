@@ -5,6 +5,9 @@
  　　http://www.pref.hokkaido.lg.jp/hf/kth/kak/hasseijoukyou.htm  
 　・北海道オープンデータポータル  
  　　https://www.harp.lg.jp/opendata/dataset/1369.html  
+　  
+ このプログラム自体は、北海道独自のPDFでしか利用することはできませんが、PDFで公開されているオープンデータをCSVに変換するための一つの見本となれば良いかと思い公開します。
+ あまりきれいなプログラムでは無いかもしれませんが、参考としていただければと思います。
 
 ## 変換に必要なファイル
     hasseijyoukyouitiranXXXX.pdf（必須）  
