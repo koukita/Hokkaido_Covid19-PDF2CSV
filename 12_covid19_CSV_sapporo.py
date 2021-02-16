@@ -82,7 +82,12 @@ if(os.path.exists(CSV_path + "\\sapporo_" + dt_mmdd + ".csv")): #ファイルが
                 elif "非公表" in c_txt:
                     p_symptons = "非公表"
                 else:
-                    p_symptons = c_txt.replace("主な症状等  ","").replace("、",";")
+                    if (i - ken_num) == 1:
+                        p_symptons = c_txt.replace("主な症状等  ","").replace("、",";")
+                    elif  (i - ken_num) == 2:
+                        p_symptons = str(csv_read_df.iloc[i-1,j]) + c_txt
+                        p_symptons = p_symptons.replace("主な症状等 ","").replace("、",";")
+                        
             elif "渡航歴" in c_txt:
                 #ブロック最後の行なので書き込み用データフレームに1行を追加
                 #["例目","年代","性別","居住地","職業","現状","補足","再陽性FG","発症日","発症年月日","症状元","患者_症状","渡航FG","備考","エラー"])
