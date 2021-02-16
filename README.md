@@ -7,17 +7,29 @@
  　　https://www.harp.lg.jp/opendata/dataset/1369.html  
 　  
  このプログラム自体は、北海道独自のPDFでしか利用することはできませんが、PDFで公開されているオープンデータをCSVに変換するための一つの見本となれば良いかと思い公開します。
- あまりきれいなプログラムでは無いかもしれませんが、参考としていただければと思います。
+ あまりきれいなプログラムでは無いかもしれませんが、参考としていただければと思います。  
+   
+ このプログラムは、2021年2月13日現在のPDFに対応しています。PDFの様式が変更になった場合などは、正しく変換できなくなる場合があります。  
+ もし変換できないエラーなどに気づいた場合は、issueに書き込みをお願いします。
 
 ## 変換に必要なファイル
-    hasseijyoukyouitiranXXXX.pdf（必須）  
-    hokkaido_zXXXXX.pdf  
-    sapporo_XXXX.pdf  
-    asahikawa_XXXX.pdf  
-    hakodate_XXXX.pdf  
-    otaru_XXXX.pdf  
-※全てのファイルが必要ではありません。（「XXXX」は発表日）  
-※PDFファイルを一つのフォルダにまとめてダウンロードしておきます。
+　北海道報道発表PDF  （PDFダウンロードフォルダに保存）
+ 
+    ・hasseijyoukyouitiranXXXX.pdf（必須）  
+    ・hokkaido_zXXXXX.pdf  
+    ・sapporo_XXXX.pdf  
+    ・asahikawa_XXXX.pdf  
+    ・hakodate_XXXX.pdf  
+    ・otaru_XXXX.pdf  
+    ※全てのファイルが必要ではありません。（「XXXX」は発表日）  
+    ※PDFファイルを一つのフォルダにまとめてダウンロードしておきます。
+
+
+　オープンデータCSV　（CSV作成フォルダに保存）
+ 
+    ・010006_hokkaido_covid19_patients.csv
+    ・patients.csv
+    ・patients_age_sex.csv
 
 ## プログラムファイル
 　プログラムファイルは、全て同じフォルダに保存しておきます。  
@@ -36,6 +48,9 @@
 ## パスの設定
 　プログラムを実行する前に、ダウンロードされたPDFファイルのパスと、作成したCSVファイルを保存するパスの設定が必要です。  
 　pdf_download_path.py をテキストエディタなどで開いて、「pdf_path = 」の部分にパスを設定してください。
+ 
+    「def p_path():」がPDFダウンロードフォルダ
+    「def covid_path():」がCSV作成フォルダです
  
  
 ## プログラムの実行
