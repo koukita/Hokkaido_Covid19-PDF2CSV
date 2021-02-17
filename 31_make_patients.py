@@ -45,7 +45,7 @@ if(os.path.exists(covid19_path + "\\patients.csv")) and (os.path.exists(download
         p_hassei = str(df_csv_hassei.iloc[gyou_hassei,5]) #発生
         p_jyoukyou = str(df_csv_hassei.iloc[gyou_hassei,6]) #状況
         #print(p_No)
-        # #既存の「patients.csv」データフレームを2行目から読み込む
+        # #既存の「patients.csv」データフレームを2000行前から読み込む
         for gyou_patients in range(len(df_patients)-2000-1,len(df_patients)):
             if p_No == str(df_patients.iloc[gyou_patients,0]):
                 #print("pati" + str(df_patients.iloc[gyou_patients,0]))

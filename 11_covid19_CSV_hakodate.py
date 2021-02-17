@@ -12,10 +12,10 @@ print("今日は" + dt_mmdd)
 #CSVのフォルダを指定
 CSV_path = pdf_download_path.p_path()
 
-if(os.path.exists(CSV_path + "\\hakodate_" + dt_mmdd + ".csv")): #ファイルが存在するか確認 参考【https://techacademy.jp/magazine/18994】
+if(os.path.exists(CSV_path + "\\hakodate_" + dt_mmdd + "a.csv")): #ファイルが存在するか確認 参考【https://techacademy.jp/magazine/18994】
 
     #pandasでCSVファイルを読み込み
-    csv_read_df = pd.read_csv(CSV_path + "\\hakodate_" + dt_mmdd + ".csv",encoding="CP932")
+    csv_read_df = pd.read_csv(CSV_path + "\\hakodate_" + dt_mmdd + "a.csv",encoding="CP932")
 
     #データフレームを作成（カラムのみ指定） 参考ページ【https://qiita.com/567000/items/d8a29bb7404f68d90dd4】
     csv_df = pd.DataFrame( columns=["例目","年代","性別","居住地","職業","現状","補足","再陽性FG","発症日","発症年月日","症状元","患者_症状","渡航FG","備考","エラー"])
