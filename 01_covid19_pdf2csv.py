@@ -40,7 +40,11 @@ print("今日は" + dt_mmdd)
 
 def pdf2csv(cityname,hyou,cja_name):
     #拡張子を除いたパス
-    p_filename = pdf_path + "\\" + cityname + dt_mmdd
+    if cityname == "hakodate_":
+        p_filename = pdf_path + "\\" + cityname + dt_mmdd + "a"
+    else:
+        p_filename = pdf_path + "\\" + cityname + dt_mmdd
+    
     if(os.path.exists(p_filename + ".pdf")): #ファイルが存在するか確認 参考【https://techacademy.jp/magazine/18994】
         print(cja_name + "今日は" + dt_mmdd)
         if hyou == "lattice": #「lattice=True」
@@ -64,6 +68,6 @@ def pdf2csv(cityname,hyou,cja_name):
 #==============報道発表PDFをCSVに変換=================
 pdf2csv("hokkaido_z","lattice","北海道")
 pdf2csv("sapporo_","stream","札幌")
-pdf2csv("asahikawa_","lattice","旭川")
+pdf2csv("asahikawa_","stream","旭川")
 pdf2csv("hakodate_","stream","函館")
 pdf2csv("otaru_","lattice","小樽")

@@ -23,7 +23,7 @@ if(os.path.exists(CSV_path + "\\asahikawa_" + dt_mmdd + ".csv")): #ファイル�
     df_FLG = False
     ck_num = 0
     #CSVデータフレームを1行目から読み込む
-    for i in range(len(csv_read_df)-1):
+    for i in range(len(csv_read_df)):
         if df_FLG: #フラグが立っている間の処理
             print(str(csv_read_df.iloc[i,0]))
             if str(csv_read_df.iloc[i,0]) == "nan": #1列目が空白なら、列がずれているので1列ずらす
@@ -56,10 +56,12 @@ if(os.path.exists(CSV_path + "\\asahikawa_" + dt_mmdd + ".csv")): #ファイル�
             p_error = ""
             p_bikou = "発症日は非公表"
             
-            #配列にして、データフレームに追加
-            #["例目","年代","性別","居住地","職業","現状","補足","再陽性FG","発症日","発症年月日","症状元","患者_症状","渡航FG","備考","エラー"])
-            tmp_se = pd.Series([ p_num, p_age, p_sex, p_residence, p_job, p_status, "", "", "", p_Hday, "", p_symptons, "0", p_bikou, p_error ], index=csv_df.columns)
-            csv_df = csv_df.append(tmp_se, ignore_index = True)
+            if p_num != "nan":
+                #配列にして、データフレームに追加
+                #["例目","年代","性別","居住地","職業","現状","補足","再陽性FG","発症日","発症年月日","症状元","患者_症状","渡航FG","備考","エラー"])
+                tmp_se = pd.Series([ p_num, p_age, p_sex, p_residence, p_job, p_status, "", "", "", p_Hday, "", p_symptons, "0", p_bikou, p_error ], index=csv_df.columns)
+                csv_df = csv_df.append(tmp_se, ignore_index = True)
+
             p_num = ""
             p_residence = ""
             p_sex = ""
@@ -78,14 +80,15 @@ if(os.path.exists(CSV_path + "\\asahikawa_" + dt_mmdd + ".csv")): #ファイル�
             else:
                 c_col = 0
             
-            if str(csv_read_df.iloc[i+1,c_col+2]) == ck_num: #すでに登録された番号可確認
+            if str(csv_read_df.iloc[i+1,c_col+2]) == ck_num: #すでに登録された番号か確認
                 df_FLG = False
             else:
                 df_FLG = True
                 ck_num = str(csv_read_df.iloc[i+1,c_col+2])
-        elif str(csv_read_df.iloc[i+1,9]) == "nan":
-            #11列目が空白の場合はフラグを終了
-            df_FLG = False
+        elif str(csv_read_df.iloc[i,2]) == "nan":
+            if str(csv_read_df.iloc[i+1,2]) == "nan":
+                #その行の2列目が空白で、次の行も空白の場合はフラグを終了
+                df_FLG = False
 
     print(csv_df) 
     csv_df.to_csv(CSV_path + "\\list_asahikawa_" + dt_mmdd + ".csv", index=None, encoding="CP932")

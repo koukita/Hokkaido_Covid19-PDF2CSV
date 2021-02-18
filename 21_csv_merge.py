@@ -30,7 +30,7 @@ csv_asahikawa = csv2df("asahikawa")
 csv_hokkaido = csv2df("hokkaido")
 
 csv_df = pd.concat([csv_hakodate,csv_sapporo,csv_otaru,csv_asahikawa,csv_hokkaido])
-
+#print(csv_df)
 df_so = csv_df.sort_values("例目")
 print(df_so)
 # CSVで出力
