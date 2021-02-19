@@ -24,8 +24,9 @@ if(os.path.exists(CSV_path + "\\hakodate_" + dt_mmdd + "a.csv")): #ファイル�
     ken_num = 0
 
     #CSVデータフレームを1行目から読み込む
-    for i in range(len(csv_read_df)-1):
-        for j in range(len(csv_read_df.columns)-1): #1列目から順番に読み込み
+    for i in range(len(csv_read_df)):
+        for j in range(len(csv_read_df.columns)): #1列目から順番に読み込み
+            print(str(i) + "," + str(j))
             c_txt = str(csv_read_df.iloc[i,j]) #値を文字列に変換して記録
             if "例目)" in c_txt:
                 p_num = c_txt.replace("(道内","").replace("例目)","")
@@ -37,7 +38,6 @@ if(os.path.exists(CSV_path + "\\hakodate_" + dt_mmdd + "a.csv")): #ファイル�
                     else:
                         p_error = "OK"
                 ken_num = i
-                
             elif "居住地" in c_txt:
                 p_residence = c_txt.replace("居住地: ","")
                 #居住地を振興局に変換
@@ -87,6 +87,7 @@ if(os.path.exists(CSV_path + "\\hakodate_" + dt_mmdd + "a.csv")): #ファイル�
                 else:
                     p_symptons = c_txt.replace("主な症状 ","").replace(",",";")
             elif "行動歴" in c_txt:
+                print("行動歴処理")
                 #ブロック最後の行なので書き込み用データフレームに1行を追加
                 #["例目","年代","性別","居住地","職業","現状","補足","再陽性FG","発症日","発症年月日","症状元","患者_症状","渡航FG","備考","エラー"])
                 tmp_se = pd.Series([ p_num, p_age, p_sex, p_residence, p_job, p_status, "", "", "", p_Hday, "", p_symptons, "0", p_bikou, p_error ], index=csv_df.columns)
