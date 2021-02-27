@@ -66,9 +66,9 @@ def pdf2csv(cityname,hyou,cja_name):
         print(cja_name + "のファイル無し")
 
 #==============報道発表PDFをCSVに変換=================
-pdf2csv("hokkaido_z","lattice","北海道")
+#pdf2csv("hokkaido_z","lattice","北海道")
+pdf2csv("hokkaido_z","stream","北海道")
 pdf2csv("sapporo_","stream","札幌")
 pdf2csv("asahikawa_","stream","旭川")
-#pdf2csv("hakodate_","stream","函館")
 pdf2csv("hakodate_","lattice","函館")
 pdf2csv("otaru_","lattice","小樽")

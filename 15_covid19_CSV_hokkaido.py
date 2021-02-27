@@ -23,7 +23,7 @@ if(os.path.exists(CSV_path + "\\hokkaido_z" + dt_mmdd + ".csv")): #ファイル�
     df_FLG = False
     #CSVデータフレームを1行目から読み込む
     for i in range(len(csv_read_df)-1):
-        if df_FLG: #フラグが立っている間の処理
+        if df_FLG and str(csv_read_df.iloc[i,1])!="nan": #フラグが立っている間の処理
             p_num = str(csv_read_df.iloc[i,1])  #例目
             p_residence = str(csv_read_df.iloc[i,2])  #居住地
             p_error = ""
@@ -112,7 +112,35 @@ if(os.path.exists(CSV_path + "\\hokkaido_z" + dt_mmdd + ".csv")): #ファイル�
             #11列目が空白の場合はフラグを終了
             df_FLG = False
 
+        #covid19_data.csv用のデータ
+        if str(csv_read_df.iloc[i,1]) == "軽症・中等症":
+            ruikei_arr = str(csv_read_df.iloc[i+1,0]).split(" ") #累計検査数、陽性累計、現在患者数
+            ruikei_arr.append(str(csv_read_df.iloc[i+1,1])) #軽症・中等症
+            ruikei_arr.append(str(csv_read_df.iloc[i+1,2])) #重  症
+            ruikei_arr.append(str(csv_read_df.iloc[i+1,3])) #死亡累計
+            ruikei_arr.append(str(csv_read_df.iloc[i+1,4])) #陰性確認済み累計
+
+        if str(csv_read_df.iloc[i,0]) == "計 道分":
+            kensa_arr=str(csv_read_df.iloc[i+1,0]).split(" ")
+            ruikei_arr.append(kensa_arr[0])
+
+        if str(csv_read_df.iloc[i,0]) == "の新規患者数":
+            kensa_arr=str(csv_read_df.iloc[i+1,0]).split(" ")
+            ruikei_arr.append(kensa_arr[1])
+            ruikei_arr.append(str(csv_read_df.iloc[i+1,1]))
+
+    #covid19_data.csv用のデータを数値に変換
+    for k in range(len(ruikei_arr)):
+        ruikei_arr[k] = int(ruikei_arr[k].replace(",","") )
+    print(ruikei_arr)
+
     print(csv_df) 
     csv_df.to_csv(CSV_path + "\\list_hokkaido_" + dt_mmdd + ".csv", index=None, encoding="CP932")
+    
+    csv2_df = pd.DataFrame( columns=["累計検査数","陽性累計","現在患者数","軽症中等症","重症","死亡者累計","陰性累計","検査数","濃厚接触者数","濃厚以外数"])
+    tmp_se2 = pd.Series([ ruikei_arr[0], ruikei_arr[1], ruikei_arr[2], ruikei_arr[3], ruikei_arr[4], ruikei_arr[5], ruikei_arr[6], ruikei_arr[7], ruikei_arr[8], ruikei_arr[9] ], index=csv2_df.columns)
+    csv2_df = csv2_df.append(tmp_se2, ignore_index = True)
+    csv2_df.to_csv(CSV_path + "\\ruikei_" + dt_mmdd + ".csv", index=None, encoding="CP932")
+
 else:
     print("道庁まとめの患者一覧無し") 
