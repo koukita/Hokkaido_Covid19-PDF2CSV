@@ -30,9 +30,19 @@ csv_asahikawa = csv2df("asahikawa")
 csv_hokkaido = csv2df("hokkaido")
 
 csv_df = pd.concat([csv_hakodate,csv_sapporo,csv_otaru,csv_asahikawa,csv_hokkaido])
-#print(csv_df)
+print(csv_df)
 df_so = csv_df.sort_values("例目")
 print(df_so)
+#順番が正しいか確認
+check_no = int(df_so.iloc[0,0])-1
+for i in range(len(df_so)):
+    if check_no != int(df_so.iloc[i,0])-1:
+        print("エラー！　No," + str(int(df_so.iloc[i,0])-1) + " がありません")
+    
+    #チェック用Noの更新
+    check_no = int(df_so.iloc[i,0])
+    
+
 # CSVで出力
 df_so.to_csv(pdf_path + "\\csv_merge_" + dt_mmdd + ".csv", index=None, encoding='shift-jis')
 print("データの確認を行って、OKなら「30_公開用データ作成.bat」を実行してください")

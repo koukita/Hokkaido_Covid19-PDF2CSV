@@ -22,24 +22,27 @@ if(os.path.exists(CSV_path + "\\hakodate_" + dt_mmdd + "a.csv")): #ファイル�
 
     #行の検査用
     ken_num = 0
-
+    p_error = ""
     #CSVデータフレームを1行目から読み込む
     for i in range(len(csv_read_df)):
         for j in range(len(csv_read_df.columns)): #1列目から順番に読み込み
-            print(str(i) + "," + str(j))
-            c_txt = str(csv_read_df.iloc[i,j]) #値を文字列に変換して記録
+            c_txt = str(csv_read_df.iloc[i,j]).replace(" ","") #半角スペースを除去
+            c_txtArr = c_txt.splitlines()
             if "例目)" in c_txt:
-                p_num = c_txt.replace("(道内","").replace("例目)","")
+                #道内番号
+                p_num = c_txtArr[1].replace("(道内","").replace("例目)","")
                 p_num = int(p_num.replace(",",""))
-                p_error = "OK1"
                 if ken_num != 0: #1ブロック目ではない
-                    if (i - ken_num) != 9: #ブロック間隔が9行ではない場合
+                    if (i - ken_num) != 8: #ブロック間隔が9行ではない場合
                         p_error = "1つ前との行間NG"
                     else:
                         p_error = "OK"
+                else:
+                    p_error = "OK1"
+
                 ken_num = i
-            elif "居住地" in c_txt:
-                p_residence = c_txt.replace("居住地: ","")
+                #居住地
+                p_residence = c_txtArr[5].replace("居住地:","")
                 #居住地を振興局に変換
                 if p_residence == "函館市":
                     p_residence = "渡島総合振興局管内"
@@ -50,26 +53,27 @@ if(os.path.exists(CSV_path + "\\hakodate_" + dt_mmdd + "a.csv")): #ファイル�
                 else:
                     p_residence = p_residence
                     p_error =  p_error + ",振興局該当なし："
-
-            elif "性 別" in c_txt:
-                p_sex = c_txt.replace("性 別 : ","")
-            elif "年 代" in c_txt:
-                if "未満" in c_txt: #10歳未満か判別
+                #性別
+                p_sex = c_txtArr[3].replace("性別:","")
+                #年齢
+                p_age = c_txtArr[2].replace("年代:","")
+                if "未満" in p_age: #10歳未満か判別
                     p_age = "10歳未満"
                 else:
-                    p_age = c_txt.replace("年 代 : ","").replace("歳","")
-            elif "職 業" in c_txt:
-                p_job = c_txt.replace("職 業 : ","")
+                    p_age = p_age.replace("歳","")
+                #職業
+                p_job = c_txtArr[6].replace("職業:","")
             elif "現在の状況" in c_txt:
+                c_txt = str(csv_read_df.iloc[i,j+1]) #一つ右のセルの値を取得
                 if "非公表" in c_txt:
                     p_status = "非公表"
                 else:
                     p_status = c_txt[c_txt.rfind(" ")+1:len(c_txt)] #後ろから文字を検索
-                    #p_status = c_txt.replace("現在の状況 ","").replace("入院等調整中 ","")
             elif "発症日" in c_txt:
+                c_txt = str(csv_read_df.iloc[i,j+1]) #一つ右のセルの値を取得
                 if "月" in c_txt:
                     c_year = int(datetime.strftime(today,'%Y')) #int関数で数値に変換
-                    c_month = int(c_txt[4:c_txt.find("月")])
+                    c_month = int(c_txt[0:c_txt.find("月")])
                     c_day = int(c_txt[c_txt.find("月")+1:len(c_txt)-1])
                     p_Hday = "{year}-{month:02}-{day:02}".format(year=c_year,month=c_month,day=c_day)
                     p_bikou = ""
@@ -80,16 +84,17 @@ if(os.path.exists(CSV_path + "\\hakodate_" + dt_mmdd + "a.csv")): #ファイル�
                     p_Hday = ""
                     p_bikou = ""
             elif "主な症状" in c_txt:
+                c_txt = str(csv_read_df.iloc[i,j+1]) #一つ右のセルの値を取得
                 if "無症状" in c_txt:
                     p_symptons = "症状なし"
                 elif "非公表" in c_txt:
                     p_symptons = "非公表"
                 else:
                     p_symptons = c_txt.replace("主な症状 ","").replace(",",";")
+
             elif "行動歴" in c_txt:
-                print("行動歴処理")
                 #ブロック最後の行なので書き込み用データフレームに1行を追加
-                #["例目","年代","性別","居住地","職業","現状","補足","再陽性FG","発症日","発症年月日","症状元","患者_症状","渡航FG","備考","エラー"])
+                # ["例目","年代","性別","居住地","職業","現状","補足","再陽性FG","発症日","発症年月日","症状元","患者_症状","渡航FG","備考","エラー"]
                 tmp_se = pd.Series([ p_num, p_age, p_sex, p_residence, p_job, p_status, "", "", "", p_Hday, "", p_symptons, "0", p_bikou, p_error ], index=csv_df.columns)
                 csv_df = csv_df.append(tmp_se, ignore_index = True)
                 p_num = ""

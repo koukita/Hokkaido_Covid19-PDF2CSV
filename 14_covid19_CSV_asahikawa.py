@@ -56,7 +56,7 @@ if(os.path.exists(CSV_path + "\\asahikawa_" + dt_mmdd + ".csv")): #ファイル�
             p_error = ""
             p_bikou = "発症日は非公表"
             
-            if p_num == "nan" and p_residence == "nan":
+            if str(csv_read_df.iloc[i,0]) == "nan" or p_num == "nan" or p_residence == "nan":
                 p_num = ""
             else:
                 #配列にして、データフレームに追加
