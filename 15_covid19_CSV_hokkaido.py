@@ -12,6 +12,9 @@ print("今日は" + dt_mmdd)
 #CSVのフォルダを指定
 CSV_path = pdf_download_path.p_path()
 
+#累計用の配列を用意
+ruikei_arr =[]
+
 if(os.path.exists(CSV_path + "\\hokkaido_z" + dt_mmdd + ".csv")): #ファイルが存在するか確認 参考【https://techacademy.jp/magazine/18994】
     #pandasでCSVファイルを読み込み
     csv_read_df = pd.read_csv(CSV_path + "\\hokkaido_z" + dt_mmdd + ".csv",encoding="CP932")
@@ -62,15 +65,15 @@ if(os.path.exists(CSV_path + "\\hokkaido_z" + dt_mmdd + ".csv")): #ファイル�
                 p_residence = p_residence
                 p_error = "振興局該当なし："
 
-            p_sex = str(csv_read_df.iloc[i,4])  #性別
-            p_age = str(csv_read_df.iloc[i,5])  #年齢
+            p_sex = str(csv_read_df.iloc[i,5])  #性別
+            p_age = str(csv_read_df.iloc[i,6])  #年齢
             if "未満" in p_age : #10歳未満か判別
                 p_age = "10歳未満"
             else:
                 p_age = p_age.replace("歳","")
-            p_job = str(csv_read_df.iloc[i,6])  #職業
-            p_status = str(csv_read_df.iloc[i,7])  #現状
-            c_hassho = str(csv_read_df.iloc[i,8])  #発症日
+            p_job = str(csv_read_df.iloc[i,7])  #職業
+            p_status = str(csv_read_df.iloc[i,8])  #現状
+            c_hassho = str(csv_read_df.iloc[i,9])  #発症日
             if "月" in c_hassho and "日" in c_hassho:
                 c_year = int(datetime.strftime(today,'%Y')) #int関数で数値に変換
                 c_month = int(c_hassho[0:c_hassho.find("月")])
@@ -112,22 +115,58 @@ if(os.path.exists(CSV_path + "\\hokkaido_z" + dt_mmdd + ".csv")): #ファイル�
             #11列目が空白の場合はフラグを終了
             df_FLG = False
 
-        #covid19_data.csv用のデータ
+        #==========covid19_data.csv用のデータ============
+        #累計検査数と陽性累計と現在患者数が一つになっている場合
         if str(csv_read_df.iloc[i,1]) == "軽症・中等症":
-            ruikei_arr = str(csv_read_df.iloc[i+1,0]).split(" ") #累計検査数、陽性累計、現在患者数
+            kensa_arr = str(csv_read_df.iloc[i+1,0]).split(" ") #累計検査数、陽性累計、現在患者数
+            ruikei_arr.append(kensa_arr[0]) #累計検査数
+            ruikei_arr.append(kensa_arr[1]) #陽性累計
+            ruikei_arr.append(kensa_arr[2]) #現在患者数
             ruikei_arr.append(str(csv_read_df.iloc[i+1,1])) #軽症・中等症
             ruikei_arr.append(str(csv_read_df.iloc[i+1,2])) #重  症
             ruikei_arr.append(str(csv_read_df.iloc[i+1,3])) #死亡累計
             ruikei_arr.append(str(csv_read_df.iloc[i+1,4])) #陰性確認済み累計
 
+        #累計検査数と陽性累計が一つになっている場合
+        if str(csv_read_df.iloc[i,2]) == "軽症・中等症":
+            kensa_arr = str(csv_read_df.iloc[i+1,0]).split(" ") #累計検査数、陽性累計
+            ruikei_arr.append(kensa_arr[0]) #累計検査数
+            ruikei_arr.append(kensa_arr[1]) #陽性累計
+            ruikei_arr.append(str(csv_read_df.iloc[i+1,1])) #現在患者数
+            ruikei_arr.append(str(csv_read_df.iloc[i+1,2])) #軽症・中等症
+            ruikei_arr.append(str(csv_read_df.iloc[i+1,3])) #重  症
+            ruikei_arr.append(str(csv_read_df.iloc[i+1,4])) #死亡累計
+            ruikei_arr.append(str(csv_read_df.iloc[i+1,5])) #陰性確認済み累計
+
+        #累計検査数と陽性累計が別になっている場合    
+        if str(csv_read_df.iloc[i,3]) == "軽症・中等症":
+            ruikei_arr.append(str(csv_read_df.iloc[i+1,0])) #累計検査数
+            ruikei_arr.append(str(csv_read_df.iloc[i+1,1])) #陽性累計
+            ruikei_arr.append(str(csv_read_df.iloc[i+1,2])) #現在患者数
+            ruikei_arr.append(str(csv_read_df.iloc[i+1,3])) #軽症・中等症
+            ruikei_arr.append(str(csv_read_df.iloc[i+1,4])) #重  症
+            ruikei_arr.append(str(csv_read_df.iloc[i+1,5])) #死亡累計
+            ruikei_arr.append(str(csv_read_df.iloc[i+1,6])) #陰性確認済み累計
+
+        #計と道分が1つになっている場合 
         if str(csv_read_df.iloc[i,0]) == "計 道分":
             kensa_arr=str(csv_read_df.iloc[i+1,0]).split(" ")
-            ruikei_arr.append(kensa_arr[0])
+            ruikei_arr.append(kensa_arr[0]) #検査数実人数
+        
+        #計と道分が別になっている場合 
+        if str(csv_read_df.iloc[i,1]) == "道分":
+            ruikei_arr.append(str(csv_read_df.iloc[i+1,0])) #検査数実人数
 
+        #新規患者と濃厚接触者数が１つになっている場合 
         if str(csv_read_df.iloc[i,0]) == "の新規患者数":
             kensa_arr=str(csv_read_df.iloc[i+1,0]).split(" ")
-            ruikei_arr.append(kensa_arr[1])
-            ruikei_arr.append(str(csv_read_df.iloc[i+1,1]))
+            ruikei_arr.append(kensa_arr[1])  #濃厚接触者等の新規患者数
+            ruikei_arr.append(str(csv_read_df.iloc[i+1,1])) #濃厚接触者等以外の新規患者数
+        
+        #新規患者と濃厚接触者数が別になっている場合 
+        if str(csv_read_df.iloc[i,1]) == "の新規患者数":
+            ruikei_arr.append(str(csv_read_df.iloc[i+1,1])) #濃厚接触者等の新規患者数
+            ruikei_arr.append(str(csv_read_df.iloc[i+1,2])) #濃厚接触者等以外の新規患者数
 
     #covid19_data.csv用のデータを数値に変換
     for k in range(len(ruikei_arr)):

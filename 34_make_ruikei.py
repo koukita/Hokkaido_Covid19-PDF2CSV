@@ -22,7 +22,10 @@ covid19_path = pdf_download_path.covid_path()
 #ファイルが存在するか確認
 if(os.path.exists(covid19_path + "\\covid19_data.csv")) and (os.path.exists(download_path + "\\ruikei_" + dt_mmdd_today + ".csv")):
     #pandasでCSVファイルを読み込み
-    df_covid19 = pd.read_csv(covid19_path + "\\covid19_data.csv", encoding="CP932")
+    df_covid19 = pd.read_csv(covid19_path + "\\covid19_data.csv", encoding="CP932", 
+                dtype={"日検査数": int, "検査累計": int, "日陽性数": int, "陽性累計": int, "日患者数": int, "患者累計": int, "日軽症中等症数": int
+                , "軽症中等症累計": int, "日重症数": int, "重症累計": int, "日死亡数": int, "死亡累計": int, "日治療終了数": int
+                , "治療終了累計": int, "新規検査人数計": int, "濃厚接触者": int, "濃厚接触者以外": int, "ステージ": int})
     df_ruikei = pd.read_csv(download_path + "\\ruikei_" + dt_mmdd_today + ".csv", encoding="CP932")
 
     #前日までの合計を取得
@@ -57,13 +60,13 @@ if(os.path.exists(covid19_path + "\\covid19_data.csv")) and (os.path.exists(down
         shutil.copyfile(covid19_path + "\\covid19_data.csv", covid19_path + "\\backup\\covid19_data_backup" + dt_mmdd_today + ".csv")
 
         #今日のデータを追加
-        today_kensa = today_kensa_rui - mae_kensa_rui
-        today_yousei = today_yousei_rui - mae_yousei_rui
-        today_kanjya = today_kanjya_rui - mae_kanjya_rui 
-        today_keishou = today_keishou_rui - mae_keishou_rui
-        today_jyushou = today_jyushou_rui - mae_jyushou_rui
-        today_sibou = today_sibou_rui - mae_sibou_rui
-        today_insei = today_insei_rui - mae_insei_rui
+        today_kensa = int(today_kensa_rui - mae_kensa_rui)
+        today_yousei = int(today_yousei_rui - mae_yousei_rui)
+        today_kanjya = int(today_kanjya_rui - mae_kanjya_rui) 
+        today_keishou = int(today_keishou_rui - mae_keishou_rui)
+        today_jyushou = int(today_jyushou_rui - mae_jyushou_rui)
+        today_sibou = int(today_sibou_rui - mae_sibou_rui)
+        today_insei = int(today_insei_rui - mae_insei_rui)
         today_youseiritu = Decimal(str((today_yousei / today_sinkensa)*100)).quantize(Decimal('0.1'), rounding=ROUND_HALF_UP)
         
         #配列を作る
