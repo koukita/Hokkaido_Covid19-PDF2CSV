@@ -42,6 +42,8 @@ def pdf2csv(cityname,hyou,cja_name):
     #拡張子を除いたパス
     if cityname == "hakodate_":
         p_filename = pdf_path + "\\" + cityname + dt_mmdd + "a"
+        if(os.path.exists(p_filename + ".pdf")) == False:
+            p_filename = pdf_path + "\\" + cityname + dt_mmdd #「a」がついていない場合
     else:
         p_filename = pdf_path + "\\" + cityname + dt_mmdd
     
@@ -61,6 +63,9 @@ def pdf2csv(cityname,hyou,cja_name):
             dfc = pd.concat([dfc,df])
             #print(df)   
         # CSVで出力
+        if p_filename[-1] == "a": #一番最後の文字が「a」の場合（函館）は「a」を除去
+            p_filename = p_filename[:-1]
+
         dfc.to_csv(p_filename + ".csv", index=None, encoding="CP932")
     else:
         print(cja_name + "のファイル無し")

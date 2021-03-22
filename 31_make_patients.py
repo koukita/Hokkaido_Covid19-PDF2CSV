@@ -24,8 +24,11 @@ if(os.path.exists(covid19_path + "\\patients.csv")) and (os.path.exists(download
     df_csv_merge = pd.read_csv(download_path + "\\csv_merge_" + dt_mmdd_today + ".csv", encoding="CP932")
     df_csv_hassei = pd.read_csv(download_path + "\\hasseijyoukyouitiran" + dt_mmdd_yday + ".csv", encoding="CP932")
     #print(df_patients.loc[11].values)
-    #更新用のデータフレームを作成 ※既存のpatients.csvから現在のNoから11000行目のみ取り出したのも
-    df_e_pati = df_patients.iloc[0:10000+ len(df_csv_hassei)-1000,:]
+
+    start_No = str(df_csv_hassei.iloc[0,0]) #「hasseijyoukyouitiranXXXX.csv」のはじめの番号を取得
+    start_No = int(start_No)-1
+    #更新用のデータフレームを作成 ※既存のpatients.csvから、「hasseijyoukyouitiranXXXX.csv」の行とマイナス1000行目のみ取り出したのも
+    df_e_pati = df_patients.iloc[0: start_No + len(df_csv_hassei)-1000,:]
     #print(df_e_pati)
     
     #一番最後の行を確認し、今日の日付なら終了
@@ -44,8 +47,7 @@ if(os.path.exists(covid19_path + "\\patients.csv")) and (os.path.exists(download
         p_No = str(df_csv_hassei.iloc[gyou_hassei,0]) #No
         p_hassei = str(df_csv_hassei.iloc[gyou_hassei,5]) #発生
         p_jyoukyou = str(df_csv_hassei.iloc[gyou_hassei,6]) #状況
-        #print(p_No)
-        # #既存の「patients.csv」データフレームを2000行前から読み込む
+        # 既存の「patients.csv」データフレームを2000行前から読み込む
         for gyou_patients in range(len(df_patients)-2000-1,len(df_patients)):
             if p_No == str(df_patients.iloc[gyou_patients,0]):
                 #print("pati" + str(df_patients.iloc[gyou_patients,0]))
@@ -68,6 +70,7 @@ if(os.path.exists(covid19_path + "\\patients.csv")) and (os.path.exists(download
                 tmp_se = pd.Series(p_array, index=df_e_pati.columns)
                 df_e_pati = df_e_pati.append(tmp_se, ignore_index = True)
                 print(p_array)
+                break
     
     #今日のデータを追加
     for gyou_today in range(0,len(df_csv_merge)):

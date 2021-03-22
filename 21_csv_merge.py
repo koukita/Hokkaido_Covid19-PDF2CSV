@@ -13,6 +13,7 @@ pdf_path = pdf_download_path.p_path()
 
 #==============CSVファイルが存在するか確認する関数==============
 def csv2df(cityname):
+    print(cityname + "を作成中")
     c_filename = pdf_path + "\\list_" + cityname + "_" + dt_mmdd + ".csv"
     if(os.path.exists(c_filename)): #ファイルが存在するか確認 参考【https://techacademy.jp/magazine/18994】
         rdf = pd.read_csv(c_filename,encoding="SHIFT_JIS")

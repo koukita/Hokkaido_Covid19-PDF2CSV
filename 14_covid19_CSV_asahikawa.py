@@ -61,7 +61,7 @@ if(os.path.exists(CSV_path + "\\asahikawa_" + dt_mmdd + ".csv")): #ファイル�
             else:
                 #配列にして、データフレームに追加
                 #["例目","年代","性別","居住地","職業","現状","補足","再陽性FG","発症日","発症年月日","症状元","患者_症状","渡航FG","備考","エラー"])
-                tmp_se = pd.Series([ p_num, p_age, p_sex, p_residence, p_job, p_status, "", "", "", p_Hday, "", p_symptons, "0", p_bikou, p_error ], index=csv_df.columns)
+                tmp_se = pd.Series([ p_num, p_age, p_sex, p_residence, p_job, p_status, "", "0", "", p_Hday, "", p_symptons, "0", p_bikou, p_error ], index=csv_df.columns)
                 csv_df = csv_df.append(tmp_se, ignore_index = True)
 
             p_num = ""

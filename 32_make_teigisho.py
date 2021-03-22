@@ -48,10 +48,16 @@ if(os.path.exists(covid19_path + "\\010006_hokkaido_covid19_patients.csv")) and 
         p_jyoutai = str(df_csv_merge.iloc[gyou_today,5]) #患者_状態
         p_shoujyou = str(df_csv_merge.iloc[gyou_today,11]) #患者_症状
         p_tokou = str(df_csv_merge.iloc[gyou_today,12]) #渡航履歴
+        print(p_No +  str(df_csv_merge.iloc[gyou_today,7]))
+        if str(df_csv_merge.iloc[gyou_today,7]) == "1":
+            p_saiyousei = 1
+        else:
+            p_saiyousei = 0
+
         p_bikou = str(df_csv_merge.iloc[gyou_today,13]) #備考
 
         #配列を作る
-        p_array =[p_No, p_code, p_pref, "", p_day, p_hasshoubi, p_kyojyu, p_age, p_sex, p_job, p_jyoutai, p_shoujyou, p_tokou, 0, "", p_bikou ]
+        p_array =[p_No, p_code, p_pref, "", p_day, p_hasshoubi, p_kyojyu, p_age, p_sex, p_job, p_jyoutai, p_shoujyou, p_tokou, p_saiyousei, "", p_bikou ]
         #リストを検索し、「nan」を空白に置き換え
         for index,value in enumerate(p_array):
             if value == "nan":
