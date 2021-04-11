@@ -144,7 +144,11 @@ if(os.path.exists(CSV_path + "\\hokkaido_z" + dt_mmdd + ".csv")): #ファイル�
             ruikei_arr.append(kensa_arr[1]) #陽性累計
             ruikei_arr.append(kensa_arr[2]) #現在患者数
             ruikei_arr.append(kensa_arr[3])  #軽症・中等症
-            ruikei_arr.append(str(csv_read_df.iloc[i+1,2])) #重  症
+            if str(csv_read_df.iloc[i+1,1])=="non": #重  症  2列めか3列目にデータがあるので空白でない方を取得
+                ruikei_arr.append(str(csv_read_df.iloc[i+1,2]))
+            else:
+                ruikei_arr.append(str(csv_read_df.iloc[i+1,1]))
+
             ruikei_arr.append(str(csv_read_df.iloc[i+1,3])) #死亡累計
             ruikei_arr.append(str(csv_read_df.iloc[i+1,4])) #陰性確認済み累計
 

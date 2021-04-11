@@ -76,6 +76,9 @@ if(os.path.exists(CSV_path + "\\sapporo_" + dt_mmdd + ".csv")): #ファイルが
                 elif "-" in c_txt:
                     p_Hday = ""
                     p_bikou = ""
+                else:
+                    p_Hday = ""
+                    p_bikou = ""
             elif "主な症状" in c_txt:
                 if "無症状" in c_txt:
                     p_symptons = "症状なし"

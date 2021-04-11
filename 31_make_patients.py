@@ -27,8 +27,15 @@ if(os.path.exists(covid19_path + "\\patients.csv")) and (os.path.exists(download
 
     start_No = str(df_csv_hassei.iloc[0,0]) #「hasseijyoukyouitiranXXXX.csv」のはじめの番号を取得
     start_No = int(start_No)-1
+    
+    #発症データのはじめの行を指定する。1000行以内だと、1行目から始める
+    if len(df_csv_hassei)-1000 <= 1:
+        min_gyou = 1
+    else:
+        min_gyou = len(df_csv_hassei)-1000
+
     #更新用のデータフレームを作成 ※既存のpatients.csvから、「hasseijyoukyouitiranXXXX.csv」の行とマイナス1000行目のみ取り出したのも
-    df_e_pati = df_patients.iloc[0: start_No + len(df_csv_hassei)-1000,:]
+    df_e_pati = df_patients.iloc[0: start_No + min_gyou,:]
     #print(df_e_pati)
     
     #一番最後の行を確認し、今日の日付なら終了
@@ -43,7 +50,7 @@ if(os.path.exists(covid19_path + "\\patients.csv")) and (os.path.exists(download
     shutil.copyfile(covid19_path + "\\patients.csv", covid19_path + "\\backup\\patients_backup" + dt_mmdd_today + ".csv")
 
     #公表患者情報を1行ずつ確認し、同じ番号のデータを取得
-    for gyou_hassei in range(len(df_csv_hassei)-1000,len(df_csv_hassei)):
+    for gyou_hassei in range(min_gyou,len(df_csv_hassei)):
         p_No = str(df_csv_hassei.iloc[gyou_hassei,0]) #No
         p_hassei = str(df_csv_hassei.iloc[gyou_hassei,5]) #発生
         p_jyoukyou = str(df_csv_hassei.iloc[gyou_hassei,6]) #状況
