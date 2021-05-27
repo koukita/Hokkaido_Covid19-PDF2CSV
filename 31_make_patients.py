@@ -52,8 +52,16 @@ if(os.path.exists(covid19_path + "\\patients.csv")) and (os.path.exists(download
     #公表患者情報を1行ずつ確認し、同じ番号のデータを取得
     for gyou_hassei in range(min_gyou,len(df_csv_hassei)):
         p_No = str(df_csv_hassei.iloc[gyou_hassei,0]) #No
-        p_hassei = str(df_csv_hassei.iloc[gyou_hassei,5]) #発生
-        p_jyoukyou = str(df_csv_hassei.iloc[gyou_hassei,6]) #状況
+        if "調査中" in str(df_csv_hassei.iloc[gyou_hassei,5]):#周囲の患者の発生
+            p_hassei = ""
+        else:
+            p_hassei = str(df_csv_hassei.iloc[gyou_hassei,5]) 
+
+        if "調査中" in str(df_csv_hassei.iloc[gyou_hassei,6]):#濃厚接触者の状況
+            p_jyoukyou = ""
+        else:
+            p_jyoukyou = str(df_csv_hassei.iloc[gyou_hassei,6]) 
+            
         # 既存の「patients.csv」データフレームを2000行前から読み込む
         for gyou_patients in range(len(df_patients)-2000-1,len(df_patients)):
             if p_No == str(df_patients.iloc[gyou_patients,0]):

@@ -25,7 +25,7 @@ if(os.path.exists(CSV_path + "\\asahikawa_" + dt_mmdd + ".csv")): #ファイル�
     #CSVデータフレームを1行目から読み込む
     for i in range(len(csv_read_df)):
         if df_FLG: #フラグが立っている間の処理
-            print(str(csv_read_df.iloc[i,0]))
+            #print(str(csv_read_df.iloc[i,0]))
             if str(csv_read_df.iloc[i,0]) == "nan": #1列目が空白なら、列がずれているので1列ずらす
                 c_col = 1
             else:
@@ -93,7 +93,7 @@ if(os.path.exists(CSV_path + "\\asahikawa_" + dt_mmdd + ".csv")): #ファイル�
         #         #その行の2列目が空白で、次の行も空白の場合はフラグを終了
         #         df_FLG = False
 
-    print(csv_df) 
+    #print(csv_df) 
     csv_df.to_csv(CSV_path + "\\list_asahikawa_" + dt_mmdd + ".csv", index=None, encoding="CP932")
 else:
     print("旭川の患者一覧無し") 

@@ -30,6 +30,12 @@ csv_otaru = csv2df("otaru")
 csv_asahikawa = csv2df("asahikawa")
 csv_hokkaido = csv2df("hokkaido")
 
+print(csv_hakodate)
+print(csv_sapporo)
+print(csv_otaru)
+print(csv_asahikawa)
+print(csv_hokkaido)
+#CSVで作成したデータフレームを結合
 csv_df = pd.concat([csv_hakodate,csv_sapporo,csv_otaru,csv_asahikawa,csv_hokkaido])
 print(csv_df)
 df_so = csv_df.sort_values("例目")
@@ -42,8 +48,9 @@ for i in range(len(df_so)):
     
     #チェック用Noの更新
     check_no = int(df_so.iloc[i,0])
-    
 
 # CSVで出力
 df_so.to_csv(pdf_path + "\\csv_merge_" + dt_mmdd + ".csv", index=None, encoding='shift-jis')
 print("データの確認を行って、OKなら「30_公開用データ作成.bat」を実行してください")
+
+

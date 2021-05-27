@@ -51,6 +51,7 @@ if(os.path.exists(covid19_path + "\\covid19_data.csv")) and (os.path.exists(down
     today_sinkensa = int(df_ruikei.iloc[0,7])
     today_noukou = int(df_ruikei.iloc[0,8])
     today_noukouigai = int(df_ruikei.iloc[0,9])
+    today_stage = int(df_ruikei.iloc[0,10])
 
      #今日の日付
     if d_year == mae_year and d_month == mae_month and today == mae_day:
@@ -73,7 +74,7 @@ if(os.path.exists(covid19_path + "\\covid19_data.csv")) and (os.path.exists(down
         p_array =["", d_year, d_month, today, today_kensa, today_kensa_rui, today_yousei, today_yousei_rui,
                 today_kanjya, today_kanjya_rui, today_keishou, today_keishou_rui, today_jyushou, today_jyushou_rui, 
                 today_sibou, today_sibou_rui, today_insei, today_insei_rui, today_sinkensa, today_youseiritu, 
-                today_noukou, today_noukouigai,"",3]
+                today_noukou, today_noukouigai,"",today_stage]
         tmp_se = pd.Series(p_array, index=df_covid19.columns)
         df_covid19 = df_covid19.append(tmp_se, ignore_index = True)
         print(p_array)

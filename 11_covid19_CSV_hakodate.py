@@ -28,9 +28,11 @@ if(os.path.exists(CSV_path + "\\hakodate_" + dt_mmdd + ".csv")): #ファイル�
         for j in range(len(csv_read_df.columns)): #1列目から順番に読み込み
             c_txt = str(csv_read_df.iloc[i,j]).replace(" ","") #半角スペースを除去
             c_txtArr = c_txt.splitlines()
-            if "例目)" in c_txt:
+            if "目)" in c_txt:
                 #道内番号
-                p_num = c_txtArr[1].replace("(道内","").replace("例目)","")
+                p_num = c_txtArr[1].replace("(道内","")
+                p_num = p_num.replace("例目)","")
+                p_num = p_num.replace("目)","")
                 p_num = int(p_num.replace(",",""))
                 if ken_num != 0: #1ブロック目ではない
                     if (i - ken_num) != 8: #ブロック間隔が9行ではない場合
