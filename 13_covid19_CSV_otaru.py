@@ -1,4 +1,5 @@
 import os
+from numpy import False_, floor
 import pandas as pd
 import file_day
 import pdf_download_path
@@ -12,82 +13,61 @@ print("今日は" + dt_mmdd)
 #CSVのフォルダを指定
 CSV_path = pdf_download_path.p_path()
 
+#累計用の配列を用意
+ruikei_arr =[]
+
 if(os.path.exists(CSV_path + "\\otaru_" + dt_mmdd + ".csv")): #ファイルが存在するか確認 参考【https://techacademy.jp/magazine/18994】
     #pandasでCSVファイルを読み込み
-    csv_read_df = pd.read_csv(CSV_path + "\\otaru_" + dt_mmdd + ".csv",encoding="CP932")
-    #データフレームを作成（カラムのみ指定） 参考ページ【https://qiita.com/567000/items/d8a29bb7404f68d90dd4】
-    csv_df = pd.DataFrame( columns=["例目","年代","性別","居住地","職業","現状","補足","再陽性FG","発症日","発症年月日","症状元","患者_症状","渡航FG","備考","エラー"])
+    csv_old_df = pd.read_csv(CSV_path + "\\otaru_" + dt_mmdd + ".csv",encoding="CP932")
+    #1つの列に2つのデータが有る場合があるので、CSVを修正したデータフレームを作成
+    myFLG = False
 
-    #行の検査用
-    ken_num = 0
-    df_FLG = False
+    d_shiribeshi = 0
+    d_shinkoukyoku_hikouhyou = 0
+    d_age01 = 0
+    d_age10 = 0
+    d_age20 = 0
+    d_age30 = 0
+    d_age40 = 0
+    d_age50 = 0
+    d_age60 = 0
+    d_age70 = 0
+    d_age80 = 0
+    d_age90 = 0
+    d_age100 = 0
+    d_age_hikouhyou = 0
+    d_man = 0
+    d_woman = 0
+    d_mushoujyou = 0
+    d_keishou = 0
+    d_tyoutoushou = 0
+    d_jyoushou = 0
+
+    #=======小樽のデータを作成=======
     #CSVデータフレームを1行目から読み込む
-    for i in range(len(csv_read_df)-1):
-        if df_FLG: #フラグが立っている間の処理
-            p_num = str(csv_read_df.iloc[i,2])  #例目
-            p_residence = str(csv_read_df.iloc[i,3])  #居住地
-            #居住地を振興局に変換
-            if p_residence == "小樽市":
-                p_residence = "後志総合振興局管内"
-                p_error = ""
-            elif p_residence == "非公表":
-                p_residence = "非公表"
-                p_error = ""
-            else:
-                p_residence = p_residence
-                p_error = "振興局該当なし："
+    for i in range(len(csv_old_df)-1):
+        #合計が３列目にある前提
+        if "小樽" in str(csv_old_df.iloc[i,0]):
+            d_shiribeshi = int(csv_old_df.iloc[i+1,0])
+            d_shinkoukyoku_hikouhyou = int(csv_old_df.iloc[i+1,1])
+            d_man = int(csv_old_df.iloc[i+1,2])
+            d_woman = int(csv_old_df.iloc[i+1,3])
+            d_mushoujyou = int(csv_old_df.iloc[i+1,4])
+            d_keishou = int(csv_old_df.iloc[i+1,5])
+            d_tyoutoushou = int(csv_old_df.iloc[i+1,6])
+            d_jyoushou = int(csv_old_df.iloc[i+1,7])
+            d_age_hikouhyou = d_shiribeshi + d_shinkoukyoku_hikouhyou
 
-            p_sex = str(csv_read_df.iloc[i,5])  #性別
-            p_age = str(csv_read_df.iloc[i,6])  #年齢
-            if "未満" in p_age : #10歳未満か判別
-                p_age = "10歳未満"
-            else:
-                p_age = p_age.replace("歳","")
-            p_job = str(csv_read_df.iloc[i,7])  #職業
-            p_status = str(csv_read_df.iloc[i,8])  #現状
-            c_hassho = str(csv_read_df.iloc[i,9]).replace(" ","")  #発症日 ※半角スペースを除く
-            if "月" in c_hassho and "日" in c_hassho:
-                c_year = int(datetime.strftime(today,'%Y')) #int関数で数値に変換
-                c_month = int(c_hassho[0:c_hassho.find("月")])
-                c_day = int(c_hassho[c_hassho.find("月")+1:c_hassho.find("日")])
-                p_Hday = "{year}-{month:02}-{day:02}".format(year=c_year,month=c_month,day=c_day)
-                p_bikou = ""
-            elif "非公表" in c_hassho:
-                p_Hday = ""
-                p_bikou = "発症日は非公表"
-            elif "無症状" in c_hassho:
-                p_Hday = ""
-                p_bikou = ""
-            else:
-                p_Hday = ""
-                p_bikou = ""
-            p_symptons = "非公表" #症状
-            p_error = ""
-            
-            #配列にして、データフレームに追加
-            #["例目","年代","性別","居住地","職業","現状","補足","再陽性FG","発症日","発症年月日","症状元","患者_症状","渡航FG","備考","エラー"])
-            tmp_se = pd.Series([ p_num, p_age, p_sex, p_residence, p_job, p_status, "", "0", "", p_Hday, "", p_symptons, "0", p_bikou, p_error ], index=csv_df.columns)
-            csv_df = csv_df.append(tmp_se, ignore_index = True)
-            p_num = ""
-            p_residence = ""
-            p_sex = ""
-            p_age = ""
-            p_job = ""
-            p_status = ""
-            p_Hday = ""
-            p_bikou = ""
-            p_symptons = ""
-            p_error = ""
-
-        #データフレームに入力する行かの判断
-        if str(csv_read_df.iloc[i-1,0]) == "No": #1行前
-            #「No」の次の行からフラグをたてる
-            df_FLG = True
-        elif str(csv_read_df.iloc[i+1,10]) == "nan": #1行先
-            #11列目が空白の場合はフラグを終了
-            df_FLG = False
-
+    #CSVを作成
+    csv_df = pd.DataFrame()
+    read_se = pd.Series(["小樽","振興局非公表","男性","女性","無症状","軽症","中等症","重症","年代非公表"])
+    csv_df = csv_df.append(read_se, ignore_index = True)
+    tmp_se = pd.Series([d_shiribeshi,d_shinkoukyoku_hikouhyou, d_man,d_woman,d_mushoujyou,d_keishou,d_tyoutoushou,d_jyoushou,d_age_hikouhyou ], index=csv_df.columns)
+    csv_df = csv_df.append(tmp_se, ignore_index = True)
     print(csv_df) 
-    csv_df.to_csv(CSV_path + "\\list_otaru_" + dt_mmdd + ".csv", index=None, encoding="CP932")
+    csv_df.to_csv(CSV_path + "\\day_otaru_" + dt_mmdd + ".csv",index=None,header=False, encoding="CP932")
+
+
+
 else:
-    print("小樽の患者一覧無し") 
+    print("小樽まとめの患者一覧無し") 

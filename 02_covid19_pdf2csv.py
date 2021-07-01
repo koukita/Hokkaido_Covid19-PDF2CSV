@@ -13,33 +13,6 @@ print("昨日は" + dt_mmdd)
 #PDFのフォルダを指定
 pdf_path = pdf_download_path.p_path()
 
-#==============患者一覧=================
-#PDFを読み込む
-if(os.path.exists(pdf_path + "\\hasseijyoukyouitiran" + dt_mmdd + ".pdf")): #ファイルが存在するか確認 参考【https://techacademy.jp/magazine/18994】
-    dfs = tabula.read_pdf(pdf_path + "\\hasseijyoukyouitiran" + dt_mmdd + ".pdf", lattice=True , pages = 'all')
-    #結合用データフレームを１つ目のデータフレームで作成
-    dfc = dfs[0]
-    #データフレームの数、繰り返す（ただし２番めから）
-    for df in dfs[1:99999]:
-        df = df.dropna() #NA値を除去
-        #print(df)
-        #データフレームを行結合
-        dfc = pd.concat([dfc,df])
-
-    #列名を再設定
-    dfc.columns = ["No","公表日","年代","性別","居住地","発生","状況"]
-    #Noで並び替え
-    df_so = dfc.sort_values("No")
-    #Noを整数値に変換
-    df_so["No"] = df_so["No"].astype("int64")
-
-    # CSVで出力
-    df_so.to_csv(pdf_path + "\\hasseijyoukyouitiran" + dt_mmdd + ".csv", index=None, encoding="CP932")
-    print("hasseijyoukyouitiran" + dt_mmdd + ".csv 患者一覧作成成功")
-else:
-    print("患者一覧ファイル無し")
-
-
 #==============PDFをCSVに変換する関数==============
 dt_mmdd = file_day.f_today()
 print("今日は" + dt_mmdd)
@@ -77,9 +50,10 @@ def pdf2csv(cityname,hyou,cja_name):
         print(cja_name + "のファイル無し")
 
 #==============報道発表PDFをCSVに変換=================
-#pdf2csv("hokkaido_z","lattice","北海道")
+#pdf2csv("hokkaido_","lattice","北海道")
 pdf2csv("hokkaido_","stream","北海道")
 pdf2csv("sapporo_","stream","札幌")
 pdf2csv("asahikawa_","stream","旭川")
 pdf2csv("hakodate_","lattice","函館")
+#pdf2csv("hakodate_","stream","函館")
 pdf2csv("otaru_","lattice","小樽")

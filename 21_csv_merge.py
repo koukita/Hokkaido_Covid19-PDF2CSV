@@ -26,31 +26,31 @@ def csv2df(cityname):
 #==============CSVの結合=================
 csv_hakodate = csv2df("hakodate")
 csv_sapporo = csv2df("sapporo")
-csv_otaru = csv2df("otaru")
+#csv_otaru = csv2df("otaru")
 csv_asahikawa = csv2df("asahikawa")
 csv_hokkaido = csv2df("hokkaido")
 
 print(csv_hakodate)
 print(csv_sapporo)
-print(csv_otaru)
+#print(csv_otaru)
 print(csv_asahikawa)
 print(csv_hokkaido)
 #CSVで作成したデータフレームを結合
-csv_df = pd.concat([csv_hakodate,csv_sapporo,csv_otaru,csv_asahikawa,csv_hokkaido])
+csv_df = pd.concat([csv_hakodate,csv_sapporo,csv_asahikawa,csv_hokkaido])
 print(csv_df)
 df_so = csv_df.sort_values("例目")
 print(df_so)
-#順番が正しいか確認
-check_no = int(df_so.iloc[0,0])-1
-for i in range(len(df_so)):
-    if check_no != int(df_so.iloc[i,0])-1:
-        print("エラー！　No," + str(int(df_so.iloc[i,0])-1) + " がありません")
+# #順番が正しいか確認
+# check_no = int(df_so.iloc[0,0])-1
+# for i in range(len(df_so)):
+#     if check_no != int(df_so.iloc[i,0])-1:
+#         print("エラー！　No," + str(int(df_so.iloc[i,0])-1) + " がありません")
     
-    #チェック用Noの更新
-    check_no = int(df_so.iloc[i,0])
+#     #チェック用Noの更新
+#     check_no = int(df_so.iloc[i,0])
 
 # CSVで出力
 df_so.to_csv(pdf_path + "\\csv_merge_" + dt_mmdd + ".csv", index=None, encoding='shift-jis')
-print("データの確認を行って、OKなら「30_公開用データ作成.bat」を実行してください")
+# print("データの確認を行って、OKなら「30_公開用データ作成.bat」を実行してください")
 
 

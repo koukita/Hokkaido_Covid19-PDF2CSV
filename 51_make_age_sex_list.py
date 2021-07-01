@@ -17,10 +17,11 @@ download_path = pdf_download_path.p_path()
 covid19_path = pdf_download_path.covid_path()
 
 #ファイルが存在するか確認
-if(os.path.exists(covid19_path + "\\patients_age_sex.csv")) and (os.path.exists(download_path + "\\csv_merge_" + dt_mmdd_today + ".csv")):
+if(os.path.exists(covid19_path + "\\patients_age_sex.csv")) and (os.path.exists(download_path + "\\day_total_age_" + dt_mmdd_today + ".csv")) and (os.path.exists(download_path + "\\day_total_sex_" + dt_mmdd_today + ".csv")):
     #pandasでCSVファイルを読み込み
     df_patients = pd.read_csv(covid19_path + "\\patients_age_sex.csv", encoding="CP932")
-    df_csv_merge = pd.read_csv(download_path + "\\csv_merge_" + dt_mmdd_today + ".csv", encoding="CP932")
+    df_age = pd.read_csv(download_path + "\\day_total_age_" + dt_mmdd_today + ".csv", encoding="CP932")
+    df_sex = pd.read_csv(download_path + "\\day_total_sex_" + dt_mmdd_today + ".csv", encoding="CP932")
 
     #前日までの合計を取得
     kei_day = str(df_patients.iloc[len(df_patients)-1,0])
@@ -53,33 +54,17 @@ if(os.path.exists(covid19_path + "\\patients_age_sex.csv")) and (os.path.exists(
         shutil.copyfile(covid19_path + "\\patients_age_sex.csv", covid19_path + "\\backup\\patients_age_sex_backup" + dt_mmdd_today + ".csv")
 
         #今日のデータを追加
-        for gyou_today in range(0,len(df_csv_merge)):
-            p_No = str(df_csv_merge.iloc[gyou_today,0]) #No
-            p_age = str(df_csv_merge.iloc[gyou_today,1]) #年代
-            #年齢のグループ
-            if p_age == "10歳未満" or p_age == "10代" or p_age == "20代":
-                today_20 = today_20 + 1
-            elif p_age == "30代" or p_age == "40代":
-                today_40 = today_40 + 1
-            elif p_age == "50代" or p_age == "60代":
-                today_60 = today_60 + 1
-            elif p_age == "70代" or p_age == "80代":
-                today_80 = today_80 + 1
-            elif p_age == "90代" or p_age == "100代":
-                today_100 = today_100 + 1
-            else:
-                today_age_null = today_age_null + 1
-            
-            p_sex = str(df_csv_merge.iloc[gyou_today,2]) #性別
-            #性別
-            if p_sex == "男性":
-                today_man = today_man + 1
-            elif p_sex == "女性":
-                today_woman = today_woman + 1
-            else:
-                today_sex_null = today_sex_null + 1
+        today_20 = today_20 + int(df_age.iloc[0,0]) + int(df_age.iloc[0,1]) + int(df_age.iloc[0,2]) #10-20代
+        today_40 = today_40 + int(df_age.iloc[0,3]) + int(df_age.iloc[0,4]) #30-40代
+        today_60 = today_60 + int(df_age.iloc[0,5]) + int(df_age.iloc[0,6]) #50-60代
+        today_80 = today_80 + int(df_age.iloc[0,7]) + int(df_age.iloc[0,8]) #70-80代
+        today_100 = today_100 + int(df_age.iloc[0,9]) #90-100代
+        today_age_null = today_age_null + int(df_age.iloc[0,10]) #非公表
 
-        
+        today_man = today_man + int(df_sex.iloc[0,0])  #男性
+        today_woman = today_woman + int(df_sex.iloc[0,1])  #女性
+        today_sex_null = today_sex_null + int(df_sex.iloc[0,2])  #非公表
+       
         #配列を作る
         p_array =[today_day, today_20, today_40, today_60, today_80, today_100, today_age_null, today_man, today_woman, today_sex_null ]
         tmp_se = pd.Series(p_array, index=df_patients.columns)
