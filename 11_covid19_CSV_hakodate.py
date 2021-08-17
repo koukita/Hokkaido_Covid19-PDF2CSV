@@ -3,6 +3,9 @@ import pandas as pd
 import file_day
 import pdf_download_path
 from datetime import datetime, date, timedelta
+#数値入力用のシンプルダイアログの表示
+import tkinter as tk
+import tkinter.simpledialog as simpleDialog
 
 #今日の日付
 today = datetime.today()
@@ -26,7 +29,7 @@ if(os.path.exists(CSV_path + "\\hakodate_" + dt_mmdd + ".csv")): #ファイル�
     no_kokuseki = 0
     #CSVデータフレームを1行目から読み込む
     for i in range(len(csv_read_df)):
-        if df_FLG and str(csv_read_df.iloc[i,0])!="nan": #フラグが立っている間の処理
+        if df_FLG and str(csv_read_df.iloc[i,col_status])!="nan": #フラグが立っている間の処理
             if "施設等名称" in str(csv_read_df.iloc[i,0]):
                 break
             
@@ -40,11 +43,22 @@ if(os.path.exists(CSV_path + "\\hakodate_" + dt_mmdd + ".csv")): #ファイル�
                 #居住地を振興局に変換
                 if "渡島" in p_residence or "函館市" in p_residence:
                     p_residence = "渡島総合振興局管内"
+                elif "札幌市" in p_residence:
+                    p_residence = "石狩振興局管内"
                 elif "非公表" in p_residence:
                     p_residence = "非公表"
                 else:
-                    p_residence = p_residence.replace
-                    p_error = "振興局該当なし："
+                    #シンプルダイアログの表示
+                    root = tk.Tk() 
+                    root.withdraw() #小さなウインドウを表示させない設定
+                    inputdata = simpleDialog.askstring("Input Box",
+                    "振興局名または道外の場合は都道府県名を入力してください。\n振興局の場合は「〇〇振興局管内」と入力します。\n居住地："
+                    +p_residence,initialvalue=p_residence)
+                    if inputdata == None:
+                        p_residence = ""
+                    else:
+                        p_residence = inputdata
+
 
                 p_sex = str(csv_read_df.iloc[i,col_sex])  #性別
                 p_age = str(csv_read_df.iloc[i,col_age])  #年齢

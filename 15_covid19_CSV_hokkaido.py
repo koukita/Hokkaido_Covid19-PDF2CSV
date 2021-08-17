@@ -4,6 +4,9 @@ import pandas as pd
 import file_day
 import pdf_download_path
 from datetime import datetime, date, timedelta
+#数値入力用のシンプルダイアログの表示
+import tkinter as tk
+import tkinter.simpledialog as simpleDialog
 
 #今日の日付
 today = datetime.today()
@@ -314,7 +317,14 @@ if(os.path.exists(CSV_path + "\\hokkaido_" + dt_mmdd + ".csv")): #ファイル�
             d_stage = d_stage.replace("]","")
             ruikei_arr.append(d_stage) #ステージ
     if len(ruikei_arr) == 10:
-        ruikei_arr.append("0") #ステージ
+        #シンプルダイアログの表示
+        root = tk.Tk() 
+        root.withdraw() #小さなウインドウを表示させない設定
+        inputdata = simpleDialog.askstring("Input Box","ステージの数値を入力してください",)
+        if inputdata == None:
+            ruikei_arr.append("0") #ステージ
+        else:
+            ruikei_arr.append(inputdata) #ステージ
         
     print(ruikei_arr)        
     #covid19_data.csv用のデータを数値に変換

@@ -3,6 +3,9 @@ import pandas as pd
 import file_day
 import pdf_download_path
 from datetime import datetime, date, timedelta
+#数値入力用のシンプルダイアログの表示
+import tkinter as tk
+import tkinter.simpledialog as simpleDialog
 
 #今日の日付
 today = datetime.today()
@@ -40,8 +43,16 @@ if(os.path.exists(CSV_path + "\\sapporo_" + dt_mmdd + ".csv")): #ファイルが
                 elif "非公表" in p_residence:
                     p_residence = "非公表"
                 else:
-                    p_residence = p_residence
-                    p_error = "振興局該当なし："
+                    #シンプルダイアログの表示
+                    root = tk.Tk() 
+                    root.withdraw() #小さなウインドウを表示させない設定
+                    inputdata = simpleDialog.askstring("Input Box",
+                    "振興局名または道外の場合は都道府県名を入力してください。\n振興局の場合は「〇〇振興局管内」と入力します。\n居住地："
+                    +p_residence,initialvalue=p_residence)
+                    if inputdata == None:
+                        p_residence = ""
+                    else:
+                        p_residence = inputdata
 
                 p_sex = str(csv_read_df.iloc[i,col_sex])  #性別
                 p_age = str(csv_read_df.iloc[i,col_age])  #年齢
@@ -132,7 +143,9 @@ if(os.path.exists(CSV_path + "\\sapporo_" + dt_mmdd + ".csv")): #ファイルが
                 if "接触者" in str(csv_read_df.iloc[i+1,j]):
                     col_saiyousei = j
             
-        elif str(csv_read_df.iloc[i+1,no_kokuseki+6]) == "nan" and str(csv_read_df.iloc[i+1,no_kokuseki+7]) == "nan" and str(csv_read_df.iloc[i+1,no_kokuseki+8]) == "nan":
+        elif str(csv_read_df.iloc[i+1,1]) == "PCR":
+            #B列に「PCR」と記入されていればフラグ終了
+        # elif str(csv_read_df.iloc[i+1,no_kokuseki+6]) == "nan" and str(csv_read_df.iloc[i+1,no_kokuseki+7]) == "nan" and str(csv_read_df.iloc[i+1,no_kokuseki+8]) == "nan":
             #11列目(K)、12列名(L)、13列名(M)が空白の場合はフラグを終了
             df_FLG = False
             

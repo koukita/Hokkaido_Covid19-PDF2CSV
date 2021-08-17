@@ -3,6 +3,9 @@ import pandas as pd
 import file_day
 import pdf_download_path
 from datetime import datetime, date, timedelta
+#数値入力用のシンプルダイアログの表示
+import tkinter as tk
+import tkinter.simpledialog as simpleDialog
 
 #今日の日付   
 today = datetime.today()
@@ -36,12 +39,29 @@ if(os.path.exists(CSV_path + "\\asahikawa_" + dt_mmdd + ".csv")): #ファイル�
             if p_residence == "旭川市":
                 p_residence = "上川総合振興局管内"
                 p_error = ""
+            elif "札幌市" in p_residence:
+                p_residence = "石狩振興局管内"
+                p_error = ""
             elif p_residence == "非公表":
                 p_residence = "非公表"
                 p_error = ""
+            elif p_residence == "nan":
+                p_residence = ""
+                p_error = ""
+            elif p_residence == "年代":
+                p_residence = ""
+                p_error = ""
             else:
-                p_residence = p_residence
-                p_error = "振興局該当なし："
+                #シンプルダイアログの表示
+                root = tk.Tk() 
+                root.withdraw() #小さなウインドウを表示させない設定
+                inputdata = simpleDialog.askstring("Input Box",
+                "振興局名または道外の場合は都道府県名を入力してください。\n振興局の場合は「〇〇振興局管内」と入力します。\n居住地：" 
+                + p_residence,initialvalue=p_residence)
+                if inputdata == None:
+                    p_residence = ""
+                else:
+                    p_residence = inputdata
 
             p_sex = str(csv_read_df.iloc[i,c_col + 6])  #性別
             p_age = str(csv_read_df.iloc[i,c_col + 5])  #年齢

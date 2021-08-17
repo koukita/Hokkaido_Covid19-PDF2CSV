@@ -25,7 +25,7 @@ if(os.path.exists(covid19_path + "\\covid19_data.csv")) and (os.path.exists(down
     df_covid19 = pd.read_csv(covid19_path + "\\covid19_data.csv", encoding="CP932", 
                 dtype={"日検査数": int, "検査累計": int, "日陽性数": int, "陽性累計": int, "日患者数": int, "患者累計": int, "日軽症中等症数": int
                 , "軽症中等症累計": int, "日重症数": int, "重症累計": int, "日死亡数": int, "死亡累計": int, "日治療終了数": int
-                , "治療終了累計": int, "新規検査人数計": int, "濃厚接触者": int, "濃厚接触者以外": int, "ステージ": int})
+                , "治療終了累計": int, "新規検査人数計": int, "濃厚接触者": int, "濃厚接触者以外": int, "ステージ": int, "年月日": str})
     df_ruikei = pd.read_csv(download_path + "\\ruikei_" + dt_mmdd_today + ".csv", encoding="CP932")
 
     #前日までの合計を取得
@@ -69,12 +69,14 @@ if(os.path.exists(covid19_path + "\\covid19_data.csv")) and (os.path.exists(down
         today_sibou = int(today_sibou_rui - mae_sibou_rui)
         today_insei = int(today_insei_rui - mae_insei_rui)
         today_youseiritu = Decimal(str((today_yousei / today_sinkensa)*100)).quantize(Decimal('0.1'), rounding=ROUND_HALF_UP)
-        
+        #今日の日付
+        today_day = file_day.txt_day()
+
         #配列を作る
         p_array =["", d_year, d_month, today, today_kensa, today_kensa_rui, today_yousei, today_yousei_rui,
                 today_kanjya, today_kanjya_rui, today_keishou, today_keishou_rui, today_jyushou, today_jyushou_rui, 
                 today_sibou, today_sibou_rui, today_insei, today_insei_rui, today_sinkensa, today_youseiritu, 
-                today_noukou, today_noukouigai,"",today_stage]
+                today_noukou, today_noukouigai,"",today_stage,today_day]
         tmp_se = pd.Series(p_array, index=df_covid19.columns)
         df_covid19 = df_covid19.append(tmp_se, ignore_index = True)
         print(p_array)

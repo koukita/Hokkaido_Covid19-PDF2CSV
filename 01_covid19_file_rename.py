@@ -14,33 +14,33 @@ print("ファイル名を修正します")
 pdf_path = pdf_download_path.p_path()
 
 #ファイル名の修正
-#北海道
-oldFileName = glob.glob(pdf_path + "\\hokkaido*" + dt_mmdd + "*.pdf") #「hokkaido」と日付を含むファイルを検索しリストに代入
-newFileName = pdf_path + "\\hokkaido_" + dt_mmdd + ".pdf"
-if len(oldFileName) > 0:
-    os.rename(oldFileName[0], newFileName) #ファイル名の変更
-
 #札幌
-oldFileName = glob.glob(pdf_path + "\\sapporo*" + dt_mmdd + "*.pdf") #「sapporo」と日付を含むファイルを検索しリストに代入
+oldFileName = glob.glob(pdf_path + "\\*札幌市報道*.pdf") #「札幌市報道」を含むファイルを検索しリストに代入
 newFileName = pdf_path + "\\sapporo_" + dt_mmdd + ".pdf"
 if len(oldFileName) > 0:
     os.rename(oldFileName[0], newFileName) #ファイル名の変更
 
 #函館
-oldFileName = glob.glob(pdf_path + "\\hakodate*" + dt_mmdd + "*.pdf") #「hakodate」と日付を含むファイルを検索しリストに代入
+oldFileName = glob.glob(pdf_path + "\\*函館市報道*.pdf") #「函館市報道」を含むファイルを検索しリストに代入
 newFileName = pdf_path + "\\hakodate_" + dt_mmdd + ".pdf"
 if len(oldFileName) > 0:
     os.rename(oldFileName[0], newFileName) #ファイル名の変更
 
 #小樽
-oldFileName = glob.glob(pdf_path + "\\otaru*" + dt_mmdd + "*.pdf") #「otaru」と日付を含むファイルを検索しリストに代入
+oldFileName = glob.glob(pdf_path + "\\*小樽市報道*.pdf") #「小樽市報道」を含むファイルを検索しリストに代入
 newFileName = pdf_path + "\\otaru_" + dt_mmdd + ".pdf"
 if len(oldFileName) > 0:
     os.rename(oldFileName[0], newFileName) #ファイル名の変更
 
 #旭川
-oldFileName = glob.glob(pdf_path + "\\asahikawa*" + dt_mmdd + "*.pdf") #「asahikawa」と日付を含むファイルを検索しリストに代入
+oldFileName = glob.glob(pdf_path + "\\*旭川市報道*.pdf") #「旭川市報道」を含むファイルを検索しリストに代入
 newFileName = pdf_path + "\\asahikawa_" + dt_mmdd + ".pdf"
+if len(oldFileName) > 0:
+    os.rename(oldFileName[0], newFileName) #ファイル名の変更
+
+#北海道
+oldFileName = glob.glob(pdf_path + "\\*新型コロナウイルスに関連した患者*.pdf") #キーワードを含むファイルを検索しリストに代入
+newFileName = pdf_path + "\\hokkaido_" + dt_mmdd + ".pdf"
 if len(oldFileName) > 0:
     os.rename(oldFileName[0], newFileName) #ファイル名の変更
 
