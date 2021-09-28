@@ -4,5 +4,6 @@ python 13_covid19_CSV_otaru.py
 python 14_covid19_CSV_asahikawa.py
 python 15_covid19_CSV_hokkaido.py
 python 21_csv_merge.py
+python 22_csv_count.py
 
 pause

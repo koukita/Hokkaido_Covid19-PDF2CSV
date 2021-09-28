@@ -17,8 +17,22 @@ CSV_path = pdf_download_path.p_path()
 
 if(os.path.exists(CSV_path + "\\sapporo_" + dt_mmdd + ".csv")): #ファイルが存在するか確認 参考【https://techacademy.jp/magazine/18994】
 
+    #半角スペースをカンマに置き換え 参考にしたサイト【https://www.teihenai.com/2018/11/29/python-chikan/】
+    fn = CSV_path + "\\sapporo_" + dt_mmdd + ".csv"
+    #ファイル読み込み
+    with open(fn, "r") as f:
+        s = f.read()
+    #文字を置き換え
+    s = s.replace(" ",",")
+    #ファイルを保存
+    with open(fn, "w") as f:
+        f.write(s)
+
+    #CSVの列数が行ごとに違うためエラーになるので、列数をnamesで与える
+    #参考としたサイト【http://blog.mwsoft.jp/article/113600124.html】
+    col_names = [ 'c{0:02d}'.format(i) for i in range(12) ] #12列で作成
     #pandasでCSVファイルを読み込み
-    csv_read_df = pd.read_csv(CSV_path + "\\sapporo_" + dt_mmdd + ".csv",encoding="CP932")
+    csv_read_df = pd.read_csv(CSV_path + "\\sapporo_" + dt_mmdd + ".csv",encoding="CP932", names=col_names) 
 
     #データフレームを作成（カラムのみ指定） 参考ページ【https://qiita.com/567000/items/d8a29bb7404f68d90dd4】
     csv_df = pd.DataFrame( columns=["例目","年代","性別","居住地","職業","現状","補足","再陽性FG","発症日","発症年月日","症状元","患者_症状","渡航FG","備考","エラー"])
@@ -71,7 +85,7 @@ if(os.path.exists(CSV_path + "\\sapporo_" + dt_mmdd + ".csv")): #ファイルが
                     else:
                         p_age = p_age + "代"
 
-                p_job = str(csv_read_df.iloc[i,col_job])  #職業
+                # p_job = str(csv_read_df.iloc[i,col_job])  #職業 ※2021年09月19日の発表から職業が無くなった
                 p_status = str(csv_read_df.iloc[i,col_status])  #現状
                 if str(csv_read_df.iloc[i,col_hassho]) == "nan":
                     c_hassho = str(csv_read_df.iloc[i-1,col_hassho])  #空白ならひとつ上の行のデータを取得
@@ -107,7 +121,7 @@ if(os.path.exists(CSV_path + "\\sapporo_" + dt_mmdd + ".csv")): #ファイルが
                 
                 #配列にして、データフレームに追加
                 #["例目","年代","性別","居住地","職業","現状","補足","再陽性FG","発症日","発症年月日","症状元","患者_症状","渡航FG","備考","エラー"])
-                tmp_se = pd.Series([ p_num, p_age, p_sex, p_residence, p_job, p_status, "", p_saiyousei, "", p_Hday, "", p_symptons, "0", p_bikou, p_error ], index=csv_df.columns)
+                tmp_se = pd.Series([ p_num, p_age, p_sex, p_residence, "", p_status, "", p_saiyousei, "", p_Hday, "", p_symptons, "0", p_bikou, p_error ], index=csv_df.columns)
                 csv_df = csv_df.append(tmp_se, ignore_index = True)
                 p_num = ""
                 p_residence = ""
@@ -125,25 +139,34 @@ if(os.path.exists(CSV_path + "\\sapporo_" + dt_mmdd + ".csv")): #ファイルが
             #「No」の次の行からフラグをたてる
             df_FLG = True
             #データのある列番号を更新
-            for j in range(len(csv_read_df.columns)):
-                if "例目" in str(csv_read_df.iloc[i,j]):
-                    col_num = j
-                if "居住地" in str(csv_read_df.iloc[i,j]):
-                    col_residence = j 
-                if "性別" in str(csv_read_df.iloc[i,j]):
-                    col_sex = j
-                if "年代" in str(csv_read_df.iloc[i,j]):
-                    col_age = j
-                if "職業" in str(csv_read_df.iloc[i,j]):
-                    col_job = j
-                if "現状" in str(csv_read_df.iloc[i,j]):
-                    col_status = j
-                if "発症日" in str(csv_read_df.iloc[i-1,j]):
-                    col_hassho = j 
-                if "接触者" in str(csv_read_df.iloc[i+1,j]):
-                    col_saiyousei = j
-            
-        elif str(csv_read_df.iloc[i+1,1]) == "PCR":
+            col_num = 1 # "例目"
+            col_residence = 4 # "居住地"
+            col_sex = 3 # "性別"
+            col_age = 2 # "年代"
+            col_status = 7 # "現状"
+            col_hassho = 5  # "発症日"
+            col_saiyousei = 8 # "接触者"
+
+            # for j in range(len(csv_read_df.columns)):
+                # if "例目" in str(csv_read_df.iloc[i,j]):
+                #     col_num = j
+                # if "居住地" in str(csv_read_df.iloc[i,j]):
+                #     col_residence = j 
+                # if "性別" in str(csv_read_df.iloc[i,j]):
+                #     col_sex = j
+                # if "年代" in str(csv_read_df.iloc[i,j]):
+                #     col_age = j
+                # # if "職業" in str(csv_read_df.iloc[i,j]): #※2021年09月19日の発表から職業が無くなった
+                #     # col_job = j
+                # if "現状" in str(csv_read_df.iloc[i,j]):
+                #     col_status = j
+                # if "発症日" in str(csv_read_df.iloc[i-1,j]):
+                #     col_hassho = j 
+                # if "接触者" in str(csv_read_df.iloc[i+1,j]):
+                #     col_saiyousei = j
+
+
+        elif str(csv_read_df.iloc[i+1,1]) == "PCR" or  "患者" in str(csv_read_df.iloc[i+1,0]):
             #B列に「PCR」と記入されていればフラグ終了
         # elif str(csv_read_df.iloc[i+1,no_kokuseki+6]) == "nan" and str(csv_read_df.iloc[i+1,no_kokuseki+7]) == "nan" and str(csv_read_df.iloc[i+1,no_kokuseki+8]) == "nan":
             #11列目(K)、12列名(L)、13列名(M)が空白の場合はフラグを終了

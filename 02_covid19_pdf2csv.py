@@ -15,6 +15,7 @@ pdf_path = pdf_download_path.p_path()
 
 #==============PDFをCSVに変換する関数==============
 dt_mmdd = file_day.f_today()
+dt_yesterday_mmdd = file_day.f_yesterday()
 print("今日は" + dt_mmdd)
 
 def pdf2csv(cityname,hyou,cja_name):
@@ -23,6 +24,8 @@ def pdf2csv(cityname,hyou,cja_name):
         p_filename = pdf_path + "\\" + cityname + dt_mmdd + "a"
         if(os.path.exists(p_filename + ".pdf")) == False:
             p_filename = pdf_path + "\\" + cityname + dt_mmdd #「a」がついていない場合
+    elif cityname == "hokkaido_nyuin_":
+        p_filename = pdf_path + "\\" + cityname + dt_yesterday_mmdd
     else:
         p_filename = pdf_path + "\\" + cityname + dt_mmdd
     
@@ -45,13 +48,19 @@ def pdf2csv(cityname,hyou,cja_name):
         if p_filename[-1] == "a": #一番最後の文字が「a」の場合（函館）は「a」を除去
             p_filename = p_filename[:-1]
 
-        dfc.to_csv(p_filename + ".csv", index=None, encoding="CP932")
+        if cja_name=="北海道確保病床":
+            #確保病床数用
+            dfc.to_csv(p_filename + "_byoushou.csv", index=None, encoding="CP932")
+        else:
+            dfc.to_csv(p_filename + ".csv", index=None, encoding="CP932")
     else:
         print(cja_name + "のファイル無し")
 
 #==============報道発表PDFをCSVに変換=================
 #pdf2csv("hokkaido_","lattice","北海道")
 pdf2csv("hokkaido_","stream","北海道")
+pdf2csv("hokkaido_nyuin_","lattice","北海道入院") #入院属性用＿昨日のデータ
+pdf2csv("hokkaido_nyuin_","stream","北海道確保病床") #入院属性用＿昨日のデータ
 pdf2csv("sapporo_","stream","札幌")
 pdf2csv("asahikawa_","stream","旭川")
 pdf2csv("hakodate_","lattice","函館")
