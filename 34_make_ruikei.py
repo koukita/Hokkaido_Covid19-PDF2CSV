@@ -20,13 +20,15 @@ download_path = pdf_download_path.p_path()
 covid19_path = pdf_download_path.covid_path()
 
 #ファイルが存在するか確認
-if(os.path.exists(covid19_path + "\\covid19_data.csv")) and (os.path.exists(download_path + "\\ruikei_" + dt_mmdd_today + ".csv")):
+if(os.path.exists(covid19_path + "\\covid19_data.csv")) and (os.path.exists(download_path + "\\day_total_ruikei_" + dt_mmdd_today + ".csv")):
     #pandasでCSVファイルを読み込み
+    #2021-12-08　ステージからレベルに変更したためカラムを増やした
     df_covid19 = pd.read_csv(covid19_path + "\\covid19_data.csv", encoding="CP932", 
                 dtype={"日検査数": int, "検査累計": int, "日陽性数": int, "陽性累計": int, "日患者数": int, "患者累計": int, "日軽症中等症数": int
                 , "軽症中等症累計": int, "日重症数": int, "重症累計": int, "日死亡数": int, "死亡累計": int, "日治療終了数": int
-                , "治療終了累計": int, "新規検査人数計": int, "濃厚接触者": int, "濃厚接触者以外": int, "ステージ": int, "年月日": str})
-    df_ruikei = pd.read_csv(download_path + "\\ruikei_" + dt_mmdd_today + ".csv", encoding="CP932")
+                , "治療終了累計": int, "新規検査人数計": int, "濃厚接触者": int, "濃厚接触者以外": int, "ステージ": int, "年月日": str
+                , "レベル全道": int, "レベル札幌": int, "レベル札幌以外": int})
+    df_ruikei = pd.read_csv(download_path + "\\day_total_ruikei_" + dt_mmdd_today + ".csv", encoding="CP932")
 
     #前日までの合計を取得
     mae_year = int(df_covid19.iloc[len(df_covid19)-1,1])
@@ -52,6 +54,9 @@ if(os.path.exists(covid19_path + "\\covid19_data.csv")) and (os.path.exists(down
     today_noukou = int(df_ruikei.iloc[0,8])
     today_noukouigai = int(df_ruikei.iloc[0,9])
     today_stage = int(df_ruikei.iloc[0,10])
+    today_level01 = int(df_ruikei.iloc[0,11])
+    today_level02 = int(df_ruikei.iloc[0,12])
+    today_level03 = int(df_ruikei.iloc[0,13])
 
      #今日の日付
     if d_year == mae_year and d_month == mae_month and today == mae_day:
@@ -76,7 +81,7 @@ if(os.path.exists(covid19_path + "\\covid19_data.csv")) and (os.path.exists(down
         p_array =["", d_year, d_month, today, today_kensa, today_kensa_rui, today_yousei, today_yousei_rui,
                 today_kanjya, today_kanjya_rui, today_keishou, today_keishou_rui, today_jyushou, today_jyushou_rui, 
                 today_sibou, today_sibou_rui, today_insei, today_insei_rui, today_sinkensa, today_youseiritu, 
-                today_noukou, today_noukouigai,"",today_stage,today_day]
+                today_noukou, today_noukouigai,"",today_stage,today_day,today_level01,today_level02,today_level03]
         tmp_se = pd.Series(p_array, index=df_covid19.columns)
         df_covid19 = df_covid19.append(tmp_se, ignore_index = True)
         print(p_array)

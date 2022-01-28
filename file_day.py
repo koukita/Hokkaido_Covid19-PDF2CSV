@@ -41,4 +41,15 @@ def txt_day():
     c_mmdd = datetime.strftime(today,'%Y-%m-%d')
     return c_mmdd
 
+def txt_yesterday():
+    now_time = int(datetime.strftime(datetime.now(),'%H'))
+    today = datetime.today()
+    if now_time < 8: #朝8時より前なら前日にする
+        yesterday = today - timedelta(days=2)
+    else:
+        yesterday = today - timedelta(days=1)
+
+    c_mmdd = datetime.strftime(yesterday,'%Y-%m-%d')
+    return c_mmdd
+
 

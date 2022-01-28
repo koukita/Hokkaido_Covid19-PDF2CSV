@@ -7,6 +7,8 @@ from datetime import datetime, date, timedelta
 import tkinter as tk
 import tkinter.simpledialog as simpleDialog
 
+#【2021/01/19 一覧形式に変更された】
+print("＝＝＝＝12_covid19_CSV_sapporo.py＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝")
 #今日の日付
 today = datetime.today()
 dt_mmdd = file_day.f_today()
@@ -17,162 +19,147 @@ CSV_path = pdf_download_path.p_path()
 
 if(os.path.exists(CSV_path + "\\sapporo_" + dt_mmdd + ".csv")): #ファイルが存在するか確認 参考【https://techacademy.jp/magazine/18994】
 
-    #半角スペースをカンマに置き換え 参考にしたサイト【https://www.teihenai.com/2018/11/29/python-chikan/】
-    fn = CSV_path + "\\sapporo_" + dt_mmdd + ".csv"
-    #ファイル読み込み
-    with open(fn, "r") as f:
-        s = f.read()
-    #文字を置き換え
-    s = s.replace(" ",",")
-    #ファイルを保存
-    with open(fn, "w") as f:
-        f.write(s)
-
-    #CSVの列数が行ごとに違うためエラーになるので、列数をnamesで与える
-    #参考としたサイト【http://blog.mwsoft.jp/article/113600124.html】
-    col_names = [ 'c{0:02d}'.format(i) for i in range(12) ] #12列で作成
     #pandasでCSVファイルを読み込み
-    csv_read_df = pd.read_csv(CSV_path + "\\sapporo_" + dt_mmdd + ".csv",encoding="CP932", names=col_names) 
+    csv_old_df = pd.read_csv(CSV_path + "\\sapporo_" + dt_mmdd + ".csv",encoding="CP932")
+    print("\\sapporo_" + dt_mmdd + ".csv を処理中")
 
-    #データフレームを作成（カラムのみ指定） 参考ページ【https://qiita.com/567000/items/d8a29bb7404f68d90dd4】
-    csv_df = pd.DataFrame( columns=["例目","年代","性別","居住地","職業","現状","補足","再陽性FG","発症日","発症年月日","症状元","患者_症状","渡航FG","備考","エラー"])
+    #必要な変数を設定
+    myFLG = False
 
-    #行の検査用
-    ken_num = 0
-    df_FLG = False
-    no_kokuseki = 0
+    d_ishikari = 0
+    d_sonota = 0
+    d_sapporo_igai = 0
+    d_age01 = 0
+    d_age10 = 0
+    d_age20 = 0
+    d_age30 = 0
+    d_age40 = 0
+    d_age50 = 0
+    d_age60 = 0
+    d_age70 = 0
+    d_age80 = 0
+    d_age90 = 0
+    d_age100 = 0
+    d_man = 0
+    d_woman = 0
+    d_sex_hikouhyou = 0
+    d_mushoujyou = 0
+    d_keishou = 0
+    d_tyoutoushou = 0
+    d_jyoushou = 0
+    d_genjyou_fumei = 0
+
+    #=======振興局ごとの人数=======
     #CSVデータフレームを1行目から読み込む
-    for i in range(len(csv_read_df)-1):
-        if df_FLG and str(csv_read_df.iloc[i,1])!="nan": #フラグが立っている間の処理
-            if "例目" in str(csv_read_df.iloc[i,1]): #「例目」以外なら処理
-                p_error = ""
-            else:
-                p_num = str(csv_read_df.iloc[i,col_num])  #例目
-                p_residence = str(csv_read_df.iloc[i,col_residence])  #居住地
+    for i in range(len(csv_old_df)-1):
+        #数値が２列目にある前提
+        if "札幌市" == str(csv_old_df.iloc[i,0]):
+            new_text = str(csv_old_df.iloc[i,1]).replace(".0","") 
+            d_ishikari = int(new_text)  #札幌市の人数
+        if "札幌市外(道内)" == str(csv_old_df.iloc[i,0]):
+            new_text = str(csv_old_df.iloc[i,1]).replace(".0","") #「)」を削除
+            d_sapporo_igai  = int(new_text)  #札幌市外の人数
+        if "札幌市外(道外)" == str(csv_old_df.iloc[i,0]):
+            new_text = str(csv_old_df.iloc[i,1]).replace(".0","") #「)」を削除
+            d_sonota  = int(new_text)  #札幌市外の人数
 
-                p_error = ""
-                #居住地を振興局に変換
-                if "石狩" in p_residence or "札幌市" in p_residence:
-                    p_residence = "石狩振興局管内"
-                elif "非公表" in p_residence:
-                    p_residence = "非公表"
-                else:
-                    #シンプルダイアログの表示
-                    root = tk.Tk() 
-                    root.withdraw() #小さなウインドウを表示させない設定
-                    inputdata = simpleDialog.askstring("Input Box",
-                    "振興局名または道外の場合は都道府県名を入力してください。\n振興局の場合は「〇〇振興局管内」と入力します。\n居住地："
-                    +p_residence,initialvalue=p_residence)
-                    if inputdata == None:
-                        p_residence = ""
-                    else:
-                        p_residence = inputdata
+    day_total_shinkoukyoku = d_ishikari + d_sonota + d_sapporo_igai
+    day_total = day_total_shinkoukyoku
+    #振興局別の患者数CSVを作成
+    csv_shinkoukyoku_df = pd.DataFrame()
+    read_se = pd.Series(["集計","地域","空知","石狩","後志","胆振","日高","渡島","檜山","上川","留萌","宗谷","オホーツク","十勝","釧路","根室","道外他","非公表","重複削除","日計"])
+    csv_shinkoukyoku_df = csv_shinkoukyoku_df.append(read_se, ignore_index = True)
+    tmp_se = pd.Series(["集計","札幌市", 0,d_ishikari,0,0,0,0,0,0,0,0,0,0,0,0,d_sonota,d_sapporo_igai,0,day_total ], index=csv_shinkoukyoku_df.columns)
+    csv_shinkoukyoku_df = csv_shinkoukyoku_df.append(tmp_se, ignore_index = True)
+    print(csv_shinkoukyoku_df) 
+    csv_shinkoukyoku_df.to_csv(CSV_path + "\\day_sapporo_shinkoukyoku_" + dt_mmdd + ".csv",index=None,header=False, encoding="CP932")
+    #print(day_total_shinkoukyoku)
 
-                p_sex = str(csv_read_df.iloc[i,col_sex])  #性別
-                p_age = str(csv_read_df.iloc[i,col_age])  #年齢
-                
-                if "未満" in p_age : #10歳未満か判別
-                    p_age = "10歳未満"
-                else:
-                    p_age = p_age.replace("歳","")
-                if "代" in p_age:
-                    p_age = p_age
-                else:
-                    if p_age == "非公表":
-                        p_age = p_age
-                    elif p_age == "10歳未満":
-                        p_age = p_age
-                    else:
-                        p_age = p_age + "代"
+    #=======年代ごとの人数=======
+    if day_total_shinkoukyoku != 0:
+        for i in range(len(csv_old_df)-1):
+            #１列目にある前提
+            if "10歳未満" in str(csv_old_df.iloc[i,0]):
+                age_arr = str(csv_old_df.iloc[i+1,0]).split(" ") #2文字入っている場合は、配列に変換
+                d_age01 = int(age_arr[0].replace(".0",""))
+                d_age10 = int(age_arr[1].replace(".0",""))
+                d_age20 = int(age_arr[2].replace(".0",""))
+                d_age30 = int(age_arr[3].replace(".0",""))
+                d_age40 = int(age_arr[4].replace(".0",""))
+                d_age50 = int(age_arr[5].replace(".0",""))
+                d_age60 = int(age_arr[6].replace(".0",""))
+                d_age70 = int(age_arr[7].replace(".0",""))
+                d_age80 = int(age_arr[8].replace(".0",""))
+                d_age90 = int(age_arr[9].replace(".0",""))
+                break
 
-                # p_job = str(csv_read_df.iloc[i,col_job])  #職業 ※2021年09月19日の発表から職業が無くなった
-                p_status = str(csv_read_df.iloc[i,col_status])  #現状
-                if str(csv_read_df.iloc[i,col_hassho]) == "nan":
-                    c_hassho = str(csv_read_df.iloc[i-1,col_hassho])  #空白ならひとつ上の行のデータを取得
-                else:
-                    c_hassho = str(csv_read_df.iloc[i,col_hassho])  #発症日
-                
-                if "月" in c_hassho and "日" in c_hassho:
-                    c_year = int(datetime.strftime(today,'%Y')) #int関数で数値に変換
-                    c_month = int(c_hassho[0:c_hassho.find("月")])
-                    c_day = int(c_hassho[c_hassho.find("月")+1:c_hassho.find("日")])
-                    p_Hday = "{year}-{month:02}-{day:02}".format(year=c_year,month=c_month,day=c_day)
-                    p_bikou = ""
-                elif "非公表" in c_hassho:
-                    p_Hday = ""
-                    p_bikou = "発症日は非公表"
-                elif "無症状" in c_hassho:
-                    p_Hday = ""
-                    p_bikou = ""
-                elif "調査中" in c_hassho:
-                    p_Hday = ""
-                    p_bikou = "発症日は調査中"                
-                else:
-                    p_Hday = ""
-                    p_bikou = ""
-                p_symptons = "非公表" #症状
-                if "再陽性" in str(csv_read_df.iloc[i+1,col_saiyousei]):
-                    #次の行に再陽性と記載されている場合
-                    p_saiyousei = "1"
-                else:
-                    p_saiyousei = "0"
+    day_total = d_age01+d_age10+d_age20+d_age30+d_age40+d_age50+d_age60+d_age70+d_age80+d_age90
+    #年代別の患者数CSVを作成
+    csv_age_df = pd.DataFrame()
+    read_se = pd.Series(["集計","地域","10歳未満","10歳代","20歳代","30歳代","40歳代","50歳代","60歳代","70歳代","80歳代","90歳代以上","非公表","重複削除","日計"])
+    csv_age_df = csv_age_df.append(read_se, ignore_index = True)
+    tmp_se = pd.Series(["集計","札幌市", d_age01,d_age10,d_age20,d_age30,d_age40,d_age50,d_age60,d_age70,d_age80,d_age90,0,0,day_total ], index=csv_age_df.columns)
+    csv_age_df = csv_age_df.append(tmp_se, ignore_index = True)
+    print(csv_age_df) 
+    csv_age_df.to_csv(CSV_path + "\\day_sapporo_age_" + dt_mmdd + ".csv",index=None,header=False, encoding="CP932")
 
-                p_error = ""
-                
-                #配列にして、データフレームに追加
-                #["例目","年代","性別","居住地","職業","現状","補足","再陽性FG","発症日","発症年月日","症状元","患者_症状","渡航FG","備考","エラー"])
-                tmp_se = pd.Series([ p_num, p_age, p_sex, p_residence, "", p_status, "", p_saiyousei, "", p_Hday, "", p_symptons, "0", p_bikou, p_error ], index=csv_df.columns)
-                csv_df = csv_df.append(tmp_se, ignore_index = True)
-                p_num = ""
-                p_residence = ""
-                p_sex = ""
-                p_age = ""
-                p_job = ""
-                p_status = ""
-                p_Hday = ""
-                p_bikou = ""
-                p_symptons = ""
-                p_error = ""
-        
-        #データフレームに入力する行かの判断
-        if "No" in str(csv_read_df.iloc[i,0]) :
-            #「No」の次の行からフラグをたてる
-            df_FLG = True
-            #データのある列番号を更新
-            col_num = 1 # "例目"
-            col_residence = 4 # "居住地"
-            col_sex = 3 # "性別"
-            col_age = 2 # "年代"
-            col_status = 7 # "現状"
-            col_hassho = 5  # "発症日"
-            col_saiyousei = 8 # "接触者"
-
-            # for j in range(len(csv_read_df.columns)):
-                # if "例目" in str(csv_read_df.iloc[i,j]):
-                #     col_num = j
-                # if "居住地" in str(csv_read_df.iloc[i,j]):
-                #     col_residence = j 
-                # if "性別" in str(csv_read_df.iloc[i,j]):
-                #     col_sex = j
-                # if "年代" in str(csv_read_df.iloc[i,j]):
-                #     col_age = j
-                # # if "職業" in str(csv_read_df.iloc[i,j]): #※2021年09月19日の発表から職業が無くなった
-                #     # col_job = j
-                # if "現状" in str(csv_read_df.iloc[i,j]):
-                #     col_status = j
-                # if "発症日" in str(csv_read_df.iloc[i-1,j]):
-                #     col_hassho = j 
-                # if "接触者" in str(csv_read_df.iloc[i+1,j]):
-                #     col_saiyousei = j
+    #=======状態ごとの人数=======
+    if day_total_shinkoukyoku != 0:
+        for i in range(len(csv_old_df)-1):
+            #１列目にある前提
+            if "無症状 軽症" in str(csv_old_df.iloc[i,0]): #1つのセルにデータが集まっている場合
+                status_arr = str(csv_old_df.iloc[i+1,0]).split(" ") #2文字入っている場合は、配列に変換
+                d_mushoujyou = int(status_arr[0].replace(".0",""))
+                d_keishou = int(status_arr[1].replace(".0",""))
+                d_tyoutoushou = int(status_arr[2].replace(".0",""))
+                d_jyoushou = int(status_arr[3].replace(".0",""))
+                d_genjyou_fumei = int(status_arr[4].replace(".0",""))
+                break
+            if "無症状" in str(csv_old_df.iloc[i,0]) and "軽症" in str(csv_old_df.iloc[i,1]): #データが複数のセルに分かれている場合
+                d_mushoujyou = int(str(csv_old_df.iloc[i+1,0]).replace(".0",""))
+                d_keishou = int(str(csv_old_df.iloc[i+1,1]).replace(".0",""))
+                d_tyoutoushou = int(str(csv_old_df.iloc[i+1,2]).replace(".0",""))
+                d_jyoushou = int(str(csv_old_df.iloc[i+1,3]).replace(".0",""))
+                d_genjyou_fumei = int(str(csv_old_df.iloc[i+1,4]).replace(".0",""))
+                break
 
 
-        elif str(csv_read_df.iloc[i+1,1]) == "PCR" or  "患者" in str(csv_read_df.iloc[i+1,0]):
-            #B列に「PCR」と記入されていればフラグ終了
-        # elif str(csv_read_df.iloc[i+1,no_kokuseki+6]) == "nan" and str(csv_read_df.iloc[i+1,no_kokuseki+7]) == "nan" and str(csv_read_df.iloc[i+1,no_kokuseki+8]) == "nan":
-            #11列目(K)、12列名(L)、13列名(M)が空白の場合はフラグを終了
-            df_FLG = False
-            
-    print(csv_df) 
-    csv_df.to_csv(CSV_path + "\\list_sapporo_" + dt_mmdd + ".csv", index=None, encoding='CP932')
+    day_total = d_mushoujyou+d_keishou+d_tyoutoushou+d_jyoushou+d_genjyou_fumei
+    #状態別の患者数CSVを作成
+    csv_status_df = pd.DataFrame()
+    read_se = pd.Series(["集計","地域","無症状","軽症","中等症","重症","非公表","重複削除","日計"])
+    csv_status_df = csv_status_df.append(read_se, ignore_index = True)
+    tmp_se = pd.Series(["集計","札幌市", d_mushoujyou,d_keishou,d_tyoutoushou,d_jyoushou,d_genjyou_fumei,0,day_total ], index=csv_status_df.columns)
+    csv_status_df = csv_status_df.append(tmp_se, ignore_index = True)
+    print(csv_status_df) 
+    csv_status_df.to_csv(CSV_path + "\\day_sapporo_status_" + dt_mmdd + ".csv",index=None,header=False, encoding="CP932")
+
+    #=======性別ごとの人数=======
+    if day_total_shinkoukyoku != 0:
+        for i in range(len(csv_old_df)-1):
+            for j in range(len(csv_old_df.columns)):
+                #合計が隣の列にある前提
+                if "男性" in str(csv_old_df.iloc[i,j]):
+                    sex_arr = str(csv_old_df.iloc[i,j+1]).split(" ") #2文字入っている場合は、配列に変換
+                    d_man = int(sex_arr[0].replace(".0",""))
+                if "女性" in str(csv_old_df.iloc[i,j]):
+                    sex_arr = str(csv_old_df.iloc[i,j+1]).split(" ") #2文字入っている場合は、配列に変換
+                    d_woman = int(sex_arr[0].replace(".0",""))
+                if "調査中" in str(csv_old_df.iloc[i,j]) and "女性" in str(csv_old_df.iloc[i-1,j]):
+                    sex_arr = str(csv_old_df.iloc[i,j+1]).split(" ") #2文字入っている場合は、配列に変換
+                    d_sex_hikouhyou = int(sex_arr[0].replace(".0",""))
+                    break
+            if "女性" in str(csv_old_df.iloc[i,j]):
+                break
+
+    day_total = d_man + d_woman + d_sex_hikouhyou
+    #性別別の患者数CSVを作成
+    csv_sex_df = pd.DataFrame()
+    read_se = pd.Series(["集計","地域","男性","女性","非公表","重複削除","日計"])
+    csv_sex_df = csv_sex_df.append(read_se, ignore_index = True)
+    tmp_se = pd.Series(["集計","札幌市", d_man,d_woman,d_sex_hikouhyou,0,day_total ], index=csv_sex_df.columns)
+    csv_sex_df = csv_sex_df.append(tmp_se, ignore_index = True)
+    print(csv_sex_df) 
+    csv_sex_df.to_csv(CSV_path + "\\day_sapporo_sex_" + dt_mmdd + ".csv",index=None,header=False, encoding="CP932")
 else:
-    print("札幌の患者一覧無し") 
+    print("札幌市の患者一覧無し") 

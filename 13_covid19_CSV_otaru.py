@@ -5,6 +5,7 @@ import file_day
 import pdf_download_path
 from datetime import datetime, date, timedelta
 
+print("＝＝＝＝13_covid19_CSV_otaru.py＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝")
 #今日の日付
 today = datetime.today()
 dt_mmdd = file_day.f_today()
@@ -19,6 +20,7 @@ ruikei_arr =[]
 if(os.path.exists(CSV_path + "\\otaru_" + dt_mmdd + ".csv")): #ファイルが存在するか確認 参考【https://techacademy.jp/magazine/18994】
     #pandasでCSVファイルを読み込み
     csv_old_df = pd.read_csv(CSV_path + "\\otaru_" + dt_mmdd + ".csv",encoding="CP932")
+    print("\\otaru_" + dt_mmdd + ".csv を処理中")
     #1つの列に2つのデータが有る場合があるので、CSVを修正したデータフレームを作成
     myFLG = False
 
@@ -64,7 +66,7 @@ if(os.path.exists(CSV_path + "\\otaru_" + dt_mmdd + ".csv")): #ファイルが�
     csv_df = csv_df.append(read_se, ignore_index = True)
     tmp_se = pd.Series([d_shiribeshi,d_shinkoukyoku_hikouhyou, d_man,d_woman,d_mushoujyou,d_keishou,d_tyoutoushou,d_jyoushou,d_age_hikouhyou ], index=csv_df.columns)
     csv_df = csv_df.append(tmp_se, ignore_index = True)
-    print(csv_df) 
+    #print(csv_df) 
     csv_df.to_csv(CSV_path + "\\day_otaru_" + dt_mmdd + ".csv",index=None,header=False, encoding="CP932")
 
 

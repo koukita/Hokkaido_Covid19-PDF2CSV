@@ -19,6 +19,7 @@ from pdfminer.pdfpage import PDFPage #ファイルからページ毎の個別情
 from pdfminer.layout import LAParams #テキスト抽出解析に必要なPDFファイルのレイアウト情報をパラメーターとして設定するするためのクラス
 from io import StringIO
 
+print("＝＝＝＝16_nyuin_CSV_hokkaido.py＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝")
 #今日の日付
 today = datetime.today()
 dt_mmdd = file_day.f_yesterday()
@@ -35,6 +36,7 @@ if(os.path.exists(CSV_path + "\\hokkaido_nyuin_" + dt_mmdd + ".csv")): #ファ�
     #====PDFをtextに変換し、病床数を取得======
     # 標準組込み関数open()でモード指定をbinaryでFileオブジェクトを取得
     fp = open(CSV_path + "\\hokkaido_nyuin_" + dt_mmdd + ".pdf", 'rb')
+    print("\\hokkaido_nyuin_" + dt_mmdd + ".pdf を処理中")
 
     # 出力先をPythonコンソールするためにIOストリームを取得
     outfp = StringIO()
@@ -55,10 +57,14 @@ if(os.path.exists(CSV_path + "\\hokkaido_nyuin_" + dt_mmdd + ".csv")): #ファ�
     device.close() # TextConverterオブジェクトの解放
     fp.close()     #  Fileストリームを閉じる
 
+    txt_find1 = text.find("確保病床数は") #病床数を抽出するためのはじめの文字位置
+    txt_find2 = text.find("内は重症者用確保病床数") #終わりの文字位置
+    text = text[txt_find1:txt_find2] #検索用のテキストを抽出
+
     #print(text)  # Jupyterの出力ボックスに表示する
     #確保病床数
     txt_find1 = text.find("病床数は") #病床数を抽出するためのはじめの文字位置
-    txt_find2 = text.find("床（") #終わりの文字位置
+    txt_find2 = text.find("床（うち重症") #終わりの文字位置
     byousho1 = text[txt_find1+4:txt_find2].replace(",","") #文字の位置から病床数を抽出
     #重症用病床数
     txt_find1 = text.find("うち重症") #病床数を抽出するためのはじめの文字位置
@@ -66,6 +72,7 @@ if(os.path.exists(CSV_path + "\\hokkaido_nyuin_" + dt_mmdd + ".csv")): #ファ�
     byousho2 = text[txt_find1+4:txt_find2].replace(",","") #文字の位置から病床数を抽出
 
     byousho_arr = [byousho1,byousho2] #リストを作成
+    #print(byousho_arr)
     #======病床数の取得はここまで======
 
 
@@ -88,15 +95,18 @@ if(os.path.exists(CSV_path + "\\hokkaido_nyuin_" + dt_mmdd + ".csv")): #ファ�
             break
     
     nyuin_int_arr = [] #整数入力用のリストを準備
+    #print(nyuin_arr)
     #不要な文字「（ ）」を削除
     for i in range(len(nyuin_arr)): #リストの要素数分繰り返す
         new_text = nyuin_arr[i].replace("(","") #「（」を削除
         new_text = new_text.replace(")","") #「)」を削除
         new_text = new_text.replace("▲","-") #「▲」を「-」に置き換え
-        new_text = new_text.replace("±","") #「▲」を「-」に置き換え
+        new_text = new_text.replace("±","") #「±」を「」に置き換え
+        new_text = new_text.replace("+","") #「±」を「」に置き換え
         new_text = new_text.replace("[","") #「[」を削除
         new_text = new_text.replace("]","") #「]」を削除
         new_text = new_text.replace(",","") #「,」を削除
+        #print(new_text)
         new_int = int(new_text) #整数値に変更
         nyuin_int_arr.append(new_int)
 

@@ -39,15 +39,15 @@ newFileName = pdf_path + "\\asahikawa_" + dt_mmdd + ".pdf"
 if len(oldFileName) > 0:
     os.rename(oldFileName[0], newFileName) #ファイル名の変更
 
-#北海道　当日
-oldFileName = glob.glob(pdf_path + "\\*新型コロナウイルスに関連した患者*"+ dt_mmdd +"*.pdf") #キーワードを含むファイルを検索しリストに代入
-newFileName = pdf_path + "\\hokkaido_" + dt_mmdd + ".pdf"
-if len(oldFileName) > 0:
-    os.rename(oldFileName[0], newFileName) #ファイル名の変更
-
 #北海道　昨日（入院属性用）
 oldFileName = glob.glob(pdf_path + "\\*新型コロナウイルスに関連した患者*"+ dt_yesterday_mmdd +"*.pdf") #キーワードを含むファイルを検索しリストに代入
 newFileName = pdf_path + "\\hokkaido_nyuin_" + dt_yesterday_mmdd + ".pdf"
+if len(oldFileName) > 0:
+    os.rename(oldFileName[0], newFileName) #ファイル名の変更
+
+#北海道　当日
+oldFileName = glob.glob(pdf_path + "\\*新型コロナウイルスに関連した患者*.pdf") #キーワードを含むファイルを検索しリストに代入
+newFileName = pdf_path + "\\hokkaido_" + dt_mmdd + ".pdf"
 if len(oldFileName) > 0:
     os.rename(oldFileName[0], newFileName) #ファイル名の変更
 

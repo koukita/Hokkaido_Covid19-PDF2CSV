@@ -25,6 +25,7 @@ if(os.path.exists(covid19_path + "\\hokkaido_04sex_day.csv")) and (os.path.exist
     #pandasでCSVファイルを読み込み
     df_covid19 = pd.read_csv(covid19_path + "\\hokkaido_04sex_day.csv", encoding="CP932")
     df_total = pd.read_csv(download_path + "\\day_total_sex_" + dt_mmdd_today + ".csv", encoding="CP932")
+    df_hokkaido = pd.read_csv(download_path + "\\day_hokkaido_sex_" + dt_mmdd_today + ".csv", encoding="CP932")
 
     #最新の日付を確認
     kei_day = str(df_covid19.iloc[len(df_covid19)-1,0])
@@ -42,7 +43,21 @@ if(os.path.exists(covid19_path + "\\hokkaido_04sex_day.csv")) and (os.path.exist
         num_total = df_total.values[0] #データを配列で取得
         list_total = num_total.tolist() #NumPy配列ndarrayをリストに変換
         list_total.insert(0,today_day) #日付の挿入
-        #print(list_total)
+
+        #北海道のみのデータをリストにする
+        num_hokkaido = df_hokkaido.values[0] #データを配列で取得
+        list_hokkaido = num_hokkaido.tolist() #NumPy配列ndarrayをリストに変換
+        #不要な要素を削除
+        del list_hokkaido[:2]
+        del list_hokkaido[3]
+        list_hokkaido.insert(0,today_day) #日付の挿入
+        #print(list_hokkaido)
+        
+        #追加用リストの作成
+        list_total =list_total + [""] + list_hokkaido + [""]
+        tmp_se = pd.Series(list_total, index=df_covid19.columns)
+
+        #今日のデータを追加しCSVに保存
         tmp_se = pd.Series(list_total, index=df_covid19.columns)
         df_covid19 = df_covid19.append(tmp_se, ignore_index = True)
         print("性別ごとの日計の合計＝" + str(df_covid19["日計"].sum()))

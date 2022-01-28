@@ -5,6 +5,7 @@ import file_day
 import pdf_download_path
 from datetime import datetime, date, timedelta
 
+print("＝＝＝＝02_covid19_pdf2csv.py＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝")
 #昨日の日付
 today = datetime.today()
 dt_mmdd = file_day.f_yesterday()
@@ -28,7 +29,8 @@ def pdf2csv(cityname,hyou,cja_name):
         p_filename = pdf_path + "\\" + cityname + dt_yesterday_mmdd
     else:
         p_filename = pdf_path + "\\" + cityname + dt_mmdd
-    
+    print(p_filename)
+
     if(os.path.exists(p_filename + ".pdf")): #ファイルが存在するか確認 参考【https://techacademy.jp/magazine/18994】
         print(cja_name + "今日は" + dt_mmdd)
         if hyou == "lattice": #「lattice=True」
